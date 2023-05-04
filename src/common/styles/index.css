@@ -1,0 +1,32 @@
+@font-face {
+  font-family: 'LuloClean';
+  src: url('styles/fonts/LuluClean/LuloClean.ttf');
+  src: local('luluClean'), local('LuluClean'),
+    url('styles/fonts/LuluClean/LuloClean.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'GT Walsheim Pro';
+  src: url('styles/fonts/GTWaksheimPro/GTWalsheimPro-Regular.ttf');
+  src: local('GT Walsheim Pro Regular'), local('GTWalsheimPro-Regular'),
+    url('styles/fonts/GTWaksheimPro/GTWalsheimPro-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  font-family: 'LuloClean', 'GT Walsheim Pro', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
