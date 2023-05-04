@@ -67,5 +67,8 @@
     "vite": "^4.3.3"
   },
   "pre-commit": "lint:pre-commit",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "license": "MIT"
 }
