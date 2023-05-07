@@ -7,6 +7,12 @@
   "files": [
     "dist"
   ],
+  "directories": {
+    "components": "./dist/library/components",
+    "core": "./dist/library/core",
+    "styles": "./dist/library/styles",
+    "utils": "./dist/library/utils"
+  },
   "exports": {
     ".": {
       "import": "./dist/tp-games.es.js",
@@ -18,7 +24,7 @@
   "module": "./dist/tp-games.es.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "yarn generate-barrels && tsc && vite build",
+    "build": "tsc && vite build",
     "test": "echo \"Warn: no test specified\" && exit 0",
     "coverage": "echo \"Warn: no coverage specified\" && exit 0",
     "lint:check": "eslint .",
@@ -28,12 +34,10 @@
     "lint:pre-commit": "eslint . --max-warnings=0",
     "type-check": "tsc",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
-    "generate-barrels": "barrelsby --delete -d ./src -e vite-env.d.ts"
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
-    "@types/node": "^18.15.10",
     "firebase": "^9.19.1",
     "mobx": "^6.8.0",
     "mobx-react-lite": "^3.4.3"
@@ -43,6 +47,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/node": "^18.15.10",
     "@babel/core": "^7.21.4",
     "@emotion/babel-plugin": "^11.10.6",
     "@storybook/addon-actions": "^7.0.5",

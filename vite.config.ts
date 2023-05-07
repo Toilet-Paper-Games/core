@@ -29,7 +29,7 @@ export default defineConfig({
     sourcemap: false,
     minify: true,
     lib: {
-      entry: resolve('src', 'index.ts'),
+      entry: resolve('src', 'library/core/index.ts'),
       name: 'TPGames',
       formats: ['es', 'umd'],
       fileName: (format) => `tp-games.${format}.js`,
