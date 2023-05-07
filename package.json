@@ -14,9 +14,10 @@
     "lint:pre-commit": "eslint . --max-warnings=0",
     "type-check": "tsc",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "generate-barrels": "barrelsby --delete"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@emotion/react": "^11.10.6",
     "@types/node": "^18.15.10",
     "firebase": "^9.19.1",
@@ -42,6 +43,7 @@
     "@typescript-eslint/parser": "^5.59.0",
     "@vitejs/plugin-react": "^4.0.0",
     "babel-loader": "^9.1.2",
+    "barrelsby": "^2.7.0",
     "concurrently": "^8.0.1",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.8.0",

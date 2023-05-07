@@ -1,8 +1,10 @@
+import { resolve } from 'node:path';
+
 import react from '@vitejs/plugin-react';
 import * as path from 'path';
-import { env } from 'process';
-import obfuscator from 'rollup-plugin-obfuscator';
 import { defineConfig, PluginOption } from 'vite';
+
+import * as packageJson from './package.json';
 
 const plugins: PluginOption[] = [
   react({
@@ -12,13 +14,6 @@ const plugins: PluginOption[] = [
     },
   }),
 ];
-
-if (env.PROD) {
-  plugins.push(
-    // TODO: Optimize this for good performance and output size along with difficult debugging
-    obfuscator({}),
-  );
-}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -33,10 +28,14 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: false,
     minify: true,
+    lib: {
+      entry: resolve('src', 'component/index.ts'),
+      name: 'TPGames',
+      formats: ['es', 'umd'],
+      fileName: (format) => `react-vite-library.${format}.js`,
+    },
     rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'src/index.html'),
-      },
+      external: [...Object.keys(packageJson.peerDependencies)],
     },
   },
   plugins,
