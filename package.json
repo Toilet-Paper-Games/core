@@ -4,7 +4,6 @@
   "author": "Justin Fernald",
   "homepage": "https://justinfernald.github.io/tp-games-lib",
   "type": "module",
-  "private": true,
   "files": [
     "dist"
   ],
