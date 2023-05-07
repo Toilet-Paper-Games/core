@@ -3,39 +3,39 @@ import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import * as path from 'path';
 import { defineConfig, PluginOption } from 'vite';
+import dts from 'vite-plugin-dts';
+import tsConfigPaths from 'vite-tsconfig-paths';
 
 import * as packageJson from './package.json';
 
 const plugins: PluginOption[] = [
+  dts({
+    include: ['src'],
+  }),
   react({
     jsxImportSource: '@emotion/react',
     babel: {
       plugins: ['@emotion/babel-plugin'],
     },
   }),
+  tsConfigPaths(),
 ];
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  appType: 'spa',
-  root: './src/',
-  base: './',
-  server: {
-    host: true,
-  },
   build: {
-    outDir: '../dist',
+    outDir: './dist',
     emptyOutDir: true,
     sourcemap: false,
     minify: true,
     lib: {
-      entry: resolve('src', 'component/index.ts'),
+      entry: resolve('src', 'index.ts'),
       name: 'TPGames',
       formats: ['es', 'umd'],
-      fileName: (format) => `react-vite-library.${format}.js`,
+      fileName: (format) => `tp-games.${format}.js`,
     },
     rollupOptions: {
-      external: [...Object.keys(packageJson.peerDependencies)],
+      external: [...Object.keys(packageJson.peerDependencies), 'react/jsx-runtime'],
     },
   },
   plugins,

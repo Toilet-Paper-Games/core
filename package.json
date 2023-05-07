@@ -3,8 +3,23 @@
   "version": "0.0.0",
   "author": "Justin Fernald",
   "homepage": "https://justinfernald.github.io/tp-games-lib",
+  "type": "module",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/tp-games.es.js",
+      "require": "./dist/tp-games.umd.js"
+    },
+    "./dist/style.css": "./dist/style.css"
+  },
+  "main": "./dist/tp-games.umd.js",
+  "module": "./dist/tp-games.es.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "yarn generate-barrels && tsc && vite build",
     "test": "echo \"Warn: no test specified\" && exit 0",
     "coverage": "echo \"Warn: no coverage specified\" && exit 0",
     "lint:check": "eslint .",
@@ -15,14 +30,16 @@
     "type-check": "tsc",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "generate-barrels": "barrelsby --delete"
+    "generate-barrels": "barrelsby --delete -d ./src -e vite-env.d.ts"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@emotion/react": "^11.10.6",
     "@types/node": "^18.15.10",
     "firebase": "^9.19.1",
     "mobx": "^6.8.0",
-    "mobx-react-lite": "^3.4.3",
+    "mobx-react-lite": "^3.4.3"
+  },
+  "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -58,7 +75,9 @@
     "rollup-plugin-obfuscator": "^1.0.3",
     "storybook-dark-mode": "^3.0.0",
     "typescript": "^5.0.4",
-    "vite": "^4.3.3"
+    "vite": "^4.3.3",
+    "vite-plugin-dts": "^2.3.0",
+    "vite-tsconfig-paths": "^4.2.0"
   },
   "pre-commit": "lint:pre-commit",
   "publishConfig": {

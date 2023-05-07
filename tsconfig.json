@@ -5,7 +5,7 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
     "skipLibCheck": true,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -14,14 +14,18 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
+    "baseUrl": ".",
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
-    "sourceMap": true,
     "paths": {
       "@/*": ["./src/*"],
       "#/*": ["./assets/*"],
     },
+    "typeRoots": ["./node_modules/@types", "./src/@types"],
     "types": ["vite/client", "@emotion/react/types/css-prop", "@types/w3c-generic-sensor"]
   },
-  "include": ["src", "**/*.ts", "**/*.tsx"]
+  "include": ["src", "**/*.ts", "**/*.tsx"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
