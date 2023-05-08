@@ -1,28 +1,33 @@
 {
   "name": "@justinfernald/tp-games-lib",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Justin Fernald",
   "homepage": "https://justinfernald.github.io/tp-games-lib",
   "type": "module",
   "files": [
     "dist"
   ],
-  "directories": {
-    "components": "./dist/library/components",
-    "core": "./dist/library/core",
-    "styles": "./dist/library/styles",
-    "utils": "./dist/library/utils"
-  },
   "exports": {
-    ".": {
-      "import": "./dist/tp-games.es.js",
-      "require": "./dist/tp-games.umd.js"
+    "./components": {
+      "import": "./dist/components.es.js",
+      "require": "./dist/components.cjs.js"
     },
-    "./dist/style.css": "./dist/style.css"
+    "./core": {
+      "import": "./dist/core.es.js",
+      "require": "./dist/core.cjs.js"
+    },
+    "./styles": {
+      "import": "./dist/styles.es.js",
+      "require": "./dist/styles.cjs.js"
+    },
+    "./utils": {
+      "import": "./dist/utils.es.js",
+      "require": "./dist/utils.cjs.js"
+    }
   },
-  "main": "./dist/tp-games.umd.js",
-  "module": "./dist/tp-games.es.js",
-  "types": "./dist/index.d.ts",
+  "main": "dist/core.cjs.js",
+  "module": "dist/core.es.js",
+  "types": "library/core/index.d.ts",
   "scripts": {
     "build": "tsc && vite build",
     "test": "echo \"Warn: no test specified\" && exit 0",

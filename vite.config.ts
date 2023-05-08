@@ -10,7 +10,7 @@ import * as packageJson from './package.json';
 
 const plugins: PluginOption[] = [
   dts({
-    include: ['src'],
+    include: ['src/library'],
   }),
   react({
     jsxImportSource: '@emotion/react',
@@ -29,10 +29,15 @@ export default defineConfig({
     sourcemap: false,
     minify: true,
     lib: {
-      entry: resolve('src', 'library/core/index.ts'),
-      name: 'TPGames',
-      formats: ['es', 'umd'],
-      fileName: (format) => `tp-games.${format}.js`,
+      entry: {
+        components: 'src/library/components/index.ts',
+        core: 'src/library/core/index.ts',
+        styles: 'src/library/styles/index.ts',
+        utils: 'src/library/utils/index.ts',
+      },
+      name: 'tp-games-lib',
+      formats: ['es', 'cjs'],
+      fileName: (format, entryName) => `${entryName}.${format}.js`,
     },
     rollupOptions: {
       external: [...Object.keys(packageJson.peerDependencies), 'react/jsx-runtime'],
