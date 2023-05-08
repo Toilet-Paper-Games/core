@@ -8,7 +8,7 @@ import * as packageJson from './package.json';
 
 const plugins: PluginOption[] = [
   dts({
-    include: ['src'],
+    include: ['components', 'core', 'styles', 'utils'],
   }),
   react({
     jsxImportSource: '@emotion/react',
@@ -28,10 +28,10 @@ export default defineConfig({
     minify: true,
     lib: {
       entry: {
-        components: 'src/library/components/index.ts',
-        core: 'src/library/core/index.ts',
-        styles: 'src/library/styles/index.ts',
-        utils: 'src/library/utils/index.ts',
+        components: 'components/index.ts',
+        core: 'core/index.ts',
+        styles: 'styles/index.ts',
+        utils: 'utils/index.ts',
       },
       name: 'tp-games-lib',
       formats: ['es', 'cjs'],
