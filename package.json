@@ -59,7 +59,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/node": "^18.15.10",
+    "@types/node": "^20.1.0",
     "@babel/core": "^7.21.4",
     "@emotion/babel-plugin": "^11.10.6",
     "@storybook/addon-actions": "^7.0.5",
