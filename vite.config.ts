@@ -8,7 +8,7 @@ import * as packageJson from './package.json';
 
 const plugins: PluginOption[] = [
   dts({
-    include: ['components', 'core', 'styles', 'utils'],
+    include: ['src', 'components', 'core', 'styles', 'utils'],
   }),
   react({
     jsxImportSource: '@emotion/react',
