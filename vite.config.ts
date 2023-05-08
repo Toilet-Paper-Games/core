@@ -15,7 +15,7 @@ const plugins: PluginOption[] = [
   }),
   tsConfigPaths(),
   dts({
-    include: ['src', 'components', 'core', 'styles', 'utils'],
+    include: ['src'],
   }),
 ];
 
@@ -27,15 +27,10 @@ export default defineConfig({
     sourcemap: false,
     minify: true,
     lib: {
-      entry: {
-        components: 'components/index.ts',
-        core: 'core/index.ts',
-        styles: 'styles/index.ts',
-        utils: 'utils/index.ts',
-      },
+      entry: 'src/index.ts',
       name: 'tp-games-lib',
       formats: ['es', 'cjs'],
-      fileName: (format, entryName) => `${entryName}.${format}.js`,
+      fileName: (format) => `tp-games-lib.${format}.js`,
     },
     rollupOptions: {
       external: [...Object.keys(packageJson.peerDependencies), 'react/jsx-runtime'],
