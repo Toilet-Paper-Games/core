@@ -7,9 +7,6 @@ import tsConfigPaths from 'vite-tsconfig-paths';
 import * as packageJson from './package.json';
 
 const plugins: PluginOption[] = [
-  dts({
-    include: ['src', 'components', 'core', 'styles', 'utils'],
-  }),
   react({
     jsxImportSource: '@emotion/react',
     babel: {
@@ -17,6 +14,9 @@ const plugins: PluginOption[] = [
     },
   }),
   tsConfigPaths(),
+  dts({
+    include: ['src', 'components', 'core', 'styles', 'utils'],
+  }),
 ];
 
 // https://vitejs.dev/config/
