@@ -1,6 +1,6 @@
 {
   "name": "@justinfernald/tp-games-lib",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "author": "Justin Fernald",
   "homepage": "https://justinfernald.github.io/tp-games-lib",
   "files": [
@@ -11,6 +11,11 @@
     "utils"
   ],
   "exports": {
+    ".": {
+      "import": "./dist/core.es.js",
+      "require": "./dist/core.cjs.js",
+      "types": "./dist/core/index.d.ts"
+    },
     "./components": {
       "import": "./dist/components.es.js",
       "require": "./dist/components.cjs.js",
