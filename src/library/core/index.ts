@@ -1,2 +1,2 @@
-export * from "@/controller/CommunicationHandlerFrameController";
-export * from "@/hoster/CommunicationHandlerFrameHoster";
+export * from '@/controller/CommunicationHandlerFrameController';
+export * from '@/hoster/CommunicationHandlerFrameHoster';

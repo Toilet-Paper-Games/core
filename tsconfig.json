@@ -21,7 +21,7 @@
     "jsxImportSource": "@emotion/react",
     "paths": {
       "@/*": ["./src/*"],
-      "#/*": ["./assets/*"],
+      "#/*": ["./assets/*"]
     },
     "typeRoots": ["./node_modules/@types", "./src/@types"],
     "types": ["vite/client", "@emotion/react/types/css-prop", "@types/w3c-generic-sensor"]

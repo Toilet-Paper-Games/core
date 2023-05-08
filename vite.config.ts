@@ -1,5 +1,3 @@
-import { resolve } from 'node:path';
-
 import react from '@vitejs/plugin-react';
 import * as path from 'path';
 import { defineConfig, PluginOption } from 'vite';
@@ -10,7 +8,7 @@ import * as packageJson from './package.json';
 
 const plugins: PluginOption[] = [
   dts({
-    include: ['src/library'],
+    include: ['src'],
   }),
   react({
     jsxImportSource: '@emotion/react',
