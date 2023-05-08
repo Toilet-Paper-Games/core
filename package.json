@@ -1,6 +1,6 @@
 {
   "name": "@justinfernald/tp-games-lib",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": "Justin Fernald",
   "homepage": "https://justinfernald.github.io/tp-games-lib",
   "files": [
@@ -8,7 +8,8 @@
     "components",
     "core",
     "styles",
-    "utils"
+    "utils",
+    "tsconfig.json"
   ],
   "exports": {
     "./components": {
