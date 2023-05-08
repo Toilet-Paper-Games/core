@@ -1,6 +1,6 @@
 {
   "name": "@justinfernald/tp-games-lib",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Justin Fernald",
   "homepage": "https://justinfernald.github.io/tp-games-lib",
   "type": "module",
@@ -27,7 +27,7 @@
   },
   "main": "dist/core.cjs.js",
   "module": "dist/core.es.js",
-  "types": "library/core/index.d.ts",
+  "types": "dist/library/core/index.d.ts",
   "scripts": {
     "build": "tsc && vite build",
     "test": "echo \"Warn: no test specified\" && exit 0",
