@@ -1,1 +1,1 @@
-export const components = 1;
+export * from '@/common/components/base';

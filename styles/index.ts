@@ -1,1 +1,1 @@
-export const styles = 1;
+export * from '@/common/styles';
