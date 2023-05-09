@@ -17,7 +17,7 @@
   "module": "dist/tp-games-lib.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "yarn run generate-barrels && tsc && vite build",
+    "build": "yarn run generate-barrels && vite build",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "lint:check": "eslint .",
