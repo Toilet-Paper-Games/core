@@ -1,6 +1,6 @@
 {
   "name": "@justinfernald/tp-games-lib",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "author": "Justin Fernald",
   "homepage": "https://justinfernald.github.io/tp-games-lib",
   "files": [
@@ -11,9 +11,9 @@
   },
   "main": "dist/tp-games-lib.cjs.js",
   "module": "dist/tp-games-lib.es.js",
-  "types": "dist/tp-games-lib/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "yarn run generate-barrels && tsc && vite build",
     "test": "echo \"Warn: no test specified\" && exit 0",
     "coverage": "echo \"Warn: no coverage specified\" && exit 0",
     "lint:check": "eslint .",
@@ -23,7 +23,8 @@
     "lint:pre-commit": "eslint . --max-warnings=0",
     "type-check": "tsc",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "generate-barrels": "barrelsby --delete -d ./src -e vite-env.d.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
@@ -73,5 +74,5 @@
     "vite-tsconfig-paths": "^4.2.0"
   },
   "pre-commit": "lint:pre-commit",
-  "license": ""
+  "license": "UNLICENSED"
 }
