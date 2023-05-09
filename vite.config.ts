@@ -28,7 +28,7 @@ export default defineConfig({
     outDir: './dist',
     emptyOutDir: true,
     sourcemap: false,
-    minify: false,
+    minify: true,
     lib: {
       entry: 'src/index.ts',
       name: 'tp-games-lib',
