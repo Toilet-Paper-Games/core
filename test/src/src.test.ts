@@ -10,5 +10,7 @@ test('PACKAGE', () => {
 
   test('deg_to_rad', () => {
     expect(DEG_TO_RAD).toBe(0.017453292519943295);
+    // purposefully fail
+    expect(DEG_TO_RAD).toBe(0);
   });
 });
