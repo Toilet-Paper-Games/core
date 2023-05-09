@@ -25,7 +25,12 @@
       "@justinfernald/tp-games-lib": ["./"]
     },
     "typeRoots": ["./node_modules/@types", "./src/@types"],
-    "types": ["vite/client", "@emotion/react/types/css-prop", "@types/w3c-generic-sensor"]
+    "types": [
+      "vitest/importMeta",
+      "vite/client",
+      "@emotion/react/types/css-prop",
+      "@types/w3c-generic-sensor"
+    ]
   },
   "include": ["src", "**/*.ts", "**/*.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]

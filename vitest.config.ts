@@ -14,8 +14,12 @@ const plugins: PluginOption[] = [
 
 export default defineConfig({
   test: {
+    includeSource: ['test/**/*.{js,ts}', 'src/**/*.{js,ts}'],
     globals: true,
     environment: 'jsdom',
+    coverage: {
+      provider: 'c8',
+    },
   },
   plugins,
   resolve: {

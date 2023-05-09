@@ -96,3 +96,30 @@ export function getTimeSeconds(time: Time | number) {
   }
   return time.toSeconds();
 }
+
+if (import.meta.vitest) {
+  const { test, expect } = import.meta.vitest;
+  test('Time', () => {
+    const time = new Time(1000);
+    expect(time.toMilliseconds()).toBe(1000);
+    expect(time.toSeconds()).toBe(1);
+    expect(time.toMinutes()).toBe(1 / 60);
+    expect(time.toHours()).toBe(1 / 60 / 60);
+    expect(time.toDays()).toBe(1 / 60 / 60 / 24);
+    expect(time.add(new Time(1000)).toMilliseconds()).toBe(2000);
+    expect(time.sub(new Time(1000)).toMilliseconds()).toBe(0);
+    expect(time.multiply(2).toMilliseconds()).toBe(2000);
+    expect(time.divide(2).toMilliseconds()).toBe(500);
+    expect(time.isEqual(new Time(1000))).toBe(true);
+    expect(time.isGreaterThan(new Time(1000))).toBe(false);
+    expect(time.isGreaterThanOrEqual(new Time(1000))).toBe(true);
+    expect(time.isLessThan(new Time(1000))).toBe(false);
+    expect(time.isLessThanOrEqual(new Time(1000))).toBe(true);
+
+    expect(Time.fromMilliseconds(1000).toMilliseconds()).toBe(1000);
+    expect(Time.fromSeconds(1).toMilliseconds()).toBe(1000);
+    expect(Time.fromMinutes(1 / 60).toMilliseconds()).toBe(1000);
+    expect(Time.fromHours(1 / 60 / 60).toMilliseconds()).toBe(1000);
+    expect(Time.fromDays(1 / 60 / 60 / 24).toMilliseconds()).toBe(1000);
+  });
+}
