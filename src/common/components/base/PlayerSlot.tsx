@@ -2,17 +2,17 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState } from 'react';
 
 import { PlayerModel } from '@/common/models/PlayerModel';
+import { scalePop } from '@/common/styles/animation';
+import { colors } from '@/common/styles/theme';
 import {
   border,
   borderRadius,
-  colors,
   dropShadow,
   flex,
   flex1,
   marginHorizontal,
   relative,
-} from '@/common/styles';
-import { scalePop } from '@/common/styles/animation';
+} from '@/common/styles/utils';
 
 export interface PlayerSlotProps {
   player?: PlayerModel;

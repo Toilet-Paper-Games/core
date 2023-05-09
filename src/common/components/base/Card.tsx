@@ -1,6 +1,7 @@
 import { Interpolation, Theme } from '@emotion/react';
 
-import { borderRadius, colors, dropShadow, padding } from '@/common/styles';
+import { colors } from '@/common/styles/theme';
+import { borderRadius, dropShadow, padding } from '@/common/styles/utils';
 
 export interface CardProps {
   children: React.ReactNode;

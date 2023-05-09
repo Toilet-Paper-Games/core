@@ -1,4 +1,5 @@
-import { absolute, flexCenter, fullSize, gradients } from '@/common/styles';
+import { gradients } from '@/common/styles/theme';
+import { absolute, flexCenter, fullSize } from '@/common/styles/utils';
 
 export interface SplashProps {
   children?: React.ReactNode;

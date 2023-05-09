@@ -1,7 +1,9 @@
 /// <reference types="vitest" />
 import react from '@vitejs/plugin-react';
+import * as path from 'path';
+import { defineConfig,PluginOption } from 'vite';
 
-import { PluginOption, defineConfig } from 'vite'
+import packageJson from './package.json';
 
 const plugins: PluginOption[] = [
   react({
@@ -9,7 +11,7 @@ const plugins: PluginOption[] = [
     babel: {
       plugins: ['@emotion/babel-plugin'],
     },
-  })
+  }),
 ];
 
 export default defineConfig({
@@ -17,5 +19,12 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
   },
-  plugins
-})
+  plugins,
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '#': path.resolve(__dirname, './assets'),
+      [packageJson.name]: path.resolve(__dirname, './'),
+    },
+  },
+});
