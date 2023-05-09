@@ -1,13 +1,13 @@
 import { Interpolation, Theme } from '@emotion/react';
 
+import { colors } from '@/common/styles/theme';
 import {
   borderRadius,
-  colors,
   dropShadow,
   flexCenter,
   paddingHorizontal,
   paddingVertical,
-} from '@/common/styles';
+} from '@/common/styles/utils';
 
 export interface ButtonProps {
   children: React.ReactNode;

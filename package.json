@@ -18,8 +18,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "yarn run generate-barrels && tsc && vite build",
-    "test": "echo \"Warn: no test specified\" && exit 0",
-    "coverage": "echo \"Warn: no coverage specified\" && exit 0",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:format": "prettier . --list-different --write",
@@ -41,7 +41,6 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20.1.0",
     "@babel/core": "^7.21.4",
     "@emotion/babel-plugin": "^11.10.6",
     "@storybook/addon-actions": "^7.0.5",
@@ -51,6 +50,7 @@
     "@storybook/builder-vite": "^7.0.7",
     "@storybook/react": "^7.0.9",
     "@storybook/testing-library": "^0.1.0",
+    "@types/node": "^20.1.0",
     "@types/react": "^18.2.3",
     "@types/react-dom": "^18.0.11",
     "@types/w3c-generic-sensor": "^1.0.6",
@@ -68,14 +68,19 @@
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-storybook": "^0.6.10",
+    "jsdom": "^22.0.0",
     "pre-commit": "^1.2.2",
     "prettier": "^2.8.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "rollup-plugin-obfuscator": "^1.0.3",
     "storybook-dark-mode": "^3.0.0",
+    "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
     "vite": "^4.3.3",
     "vite-plugin-dts": "^2.3.0",
-    "vite-tsconfig-paths": "^4.2.0"
+    "vite-tsconfig-paths": "^4.2.0",
+    "vitest": "^0.31.0"
   },
   "pre-commit": "lint:pre-commit",
   "license": "UNLICENSED"

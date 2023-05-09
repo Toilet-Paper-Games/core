@@ -2,7 +2,7 @@ import { CSSObject } from '@emotion/react';
 import { CSSProperties } from '@emotion/serialize/types';
 import { Property } from 'csstype';
 
-import { standardShadows, standardSizes, transitionTimes } from '.';
+import { standardShadows, standardSizes, transitionTimes } from './theme';
 
 export type StandardSizeNumber = keyof typeof standardSizes | number;
 

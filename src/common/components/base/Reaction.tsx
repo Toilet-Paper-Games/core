@@ -1,9 +1,9 @@
-import { absolute } from '@/common/styles';
 import {
   combineAnimations,
   scaleTransition,
   waveMovement,
 } from '@/common/styles/animation';
+import { absolute } from '@/common/styles/utils';
 
 export interface ReactionProps {
   h: number;
