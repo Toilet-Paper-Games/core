@@ -1,9 +1,7 @@
 /// <reference types="vitest" />
 import react from '@vitejs/plugin-react';
 import * as path from 'path';
-import { defineConfig,PluginOption } from 'vite';
-
-import packageJson from './package.json';
+import { defineConfig, PluginOption } from 'vite';
 
 const plugins: PluginOption[] = [
   react({
@@ -24,7 +22,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '#': path.resolve(__dirname, './assets'),
-      [packageJson.name]: path.resolve(__dirname, './'),
+      '@justinfernald/tp-games-lib': path.resolve(__dirname, './'),
     },
   },
 });
