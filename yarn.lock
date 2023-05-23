@@ -1201,7 +1201,7 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.25.24.tgz#8c7688559979f7079aacaf31aa881c3aa410b718"
   integrity sha512-XJfwUVUKDHF5ugKwIcxEgc9k8b7HbznCp6eUfWgu710hMPNIO4aw4/zB5RogDQz8nd6gyCDpU9O/m6qYEWY6yQ==
 
-"@storybook/addon-actions@7.0.12", "@storybook/addon-actions@^7.0.5":
+"@storybook/addon-actions@7.0.12":
   version "7.0.12"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-7.0.12.tgz#61634c40073718cf02967f073df4595afd363521"
   integrity sha512-f07Mc3qwcG9heGsuUUTIJbWF2nw/Ite3mvyIZY2VbgwhMUMVHj4knY4fh/LojwcUmmmc7CNZu3sJN/wIqpaHCQ==
@@ -1214,6 +1214,28 @@
     "@storybook/preview-api" "7.0.12"
     "@storybook/theming" "7.0.12"
     "@storybook/types" "7.0.12"
+    dequal "^2.0.2"
+    lodash "^4.17.21"
+    polished "^4.2.2"
+    prop-types "^15.7.2"
+    react-inspector "^6.0.0"
+    telejson "^7.0.3"
+    ts-dedent "^2.0.0"
+    uuid "^9.0.0"
+
+"@storybook/addon-actions@^7.0.15":
+  version "7.0.15"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-7.0.15.tgz#e36a828d525a3a8c760c3e6dd7455db6b7d9bdcc"
+  integrity sha512-1urDxJpG5BTmZCbda+93iuCNwzj7AiPt/VlmpDpd9Mc/WTOKBg0cXo8oBLibOZgCTLEx+4sq5eVgdMVybBa87g==
+  dependencies:
+    "@storybook/client-logger" "7.0.15"
+    "@storybook/components" "7.0.15"
+    "@storybook/core-events" "7.0.15"
+    "@storybook/global" "^5.0.0"
+    "@storybook/manager-api" "7.0.15"
+    "@storybook/preview-api" "7.0.15"
+    "@storybook/theming" "7.0.15"
+    "@storybook/types" "7.0.15"
     dequal "^2.0.2"
     lodash "^4.17.21"
     polished "^4.2.2"
