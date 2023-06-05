@@ -60,7 +60,7 @@
     "@vitest/coverage-c8": "^0.31.0",
     "barrelsby": "^2.7.0",
     "concurrently": "^8.0.1",
-    "eslint": "^8.35.0",
+    "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.7.1",
