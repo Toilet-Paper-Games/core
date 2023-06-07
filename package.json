@@ -41,7 +41,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.4",
+    "@babel/core": "^7.22.1",
     "@emotion/babel-plugin": "^11.10.6",
     "@storybook/addon-actions": "^7.0.15",
     "@storybook/addon-essentials": "^7.0.12",
