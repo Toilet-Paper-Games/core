@@ -1,8 +1,8 @@
 {
-  "name": "@justinfernald/tp-games-lib",
+  "name": "@toilet-paper-games/core",
   "version": "0.0.19",
   "author": "Justin Fernald",
-  "homepage": "https://justinfernald.github.io/tp-games-lib",
+  "homepage": "https://Toilet-Paper-Games.github.io/core",
   "files": [
     "dist"
   ],
