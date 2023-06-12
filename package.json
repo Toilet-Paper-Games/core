@@ -31,7 +31,7 @@
     "generate-barrels": "barrelsby --delete -d ./src -e vite-env.d.ts"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.6",
+    "@emotion/react": "^11.11.1",
     "firebase": "^9.22.0",
     "mobx": "^6.8.0",
     "mobx-react-lite": "^3.4.3"
