@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@ampproject/remapping@^2.2.0":
+"@ampproject/remapping@^2.2.0", "@ampproject/remapping@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.2.1.tgz#99e8e11851128b8702cd57c33684f1d0f260b630"
   integrity sha512-lFMjJTrFL3j7L9yBxwYfCq2k6qqwHyzuUl/XBnif78PWTJYyL/dfowQHWE3sp6U6ZzqWiiIZnpTMO96zhkjwtg==
@@ -2715,12 +2715,12 @@
     "@babel/plugin-transform-react-jsx-source" "^7.19.6"
     react-refresh "^0.14.0"
 
-"@vitest/coverage-c8@^0.31.0":
-  version "0.31.0"
-  resolved "https://registry.yarnpkg.com/@vitest/coverage-c8/-/coverage-c8-0.31.0.tgz#67c80f0f9a2eed9b71f593ab54164f9a71af7eca"
-  integrity sha512-h72qN1D962AO7UefQVulm9JFP5ACS7OfhCdBHioXU8f7ohH/+NTZCgAqmgcfRNHHO/8wLFxx+93YVxhodkEJVA==
+"@vitest/coverage-c8@^0.32.0":
+  version "0.32.0"
+  resolved "https://registry.yarnpkg.com/@vitest/coverage-c8/-/coverage-c8-0.32.0.tgz#945f8f32ddc42af780feeea193698e5c27e5f322"
+  integrity sha512-FeTzRN5VCL7B6YTRK5ZPQO2iwJzl2x7/mTQ/2uEeKZatAYBtvczeAYnzSUhCPev7p99+5skxMQZwqVcFTrVCdg==
   dependencies:
-    "@ampproject/remapping" "^2.2.0"
+    "@ampproject/remapping" "^2.2.1"
     c8 "^7.13.0"
     magic-string "^0.30.0"
     picocolors "^1.0.0"
