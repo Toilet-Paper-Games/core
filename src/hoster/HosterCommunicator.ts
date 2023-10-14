@@ -1,13 +1,18 @@
-import { BaseCommunicationHandler } from '../common/BaseCommunicationHandler';
+import { BaseCommunicator } from '../common/BaseCommunicator';
 import {
   CommunicationDataType,
+  GameActionResponseTransfer_HOSTER,
+  GameDataDefinition,
   GameDataTransfer,
 } from '../common/CommunicationDataTransfers';
 import { PlayerModel } from '../common/models/PlayerModel';
 
-export class CommunicationHandlerFrameHoster<
-  TGameData = unknown,
-> extends BaseCommunicationHandler<TGameData> {
+export class HosterCommunicator<
+  TGameData extends GameDataDefinition = {
+    ControllerToHoster: unknown;
+    HosterToController: unknown;
+  },
+> extends BaseCommunicator<GameDataDefinition> {
   connectionPlayerMap: Map<
     string,
     { uuid: string; player: PlayerModel; active: boolean }
@@ -68,7 +73,7 @@ export class CommunicationHandlerFrameHoster<
     this.nameUpdateListeners.push(listener);
   }
 
-  sendGameMessage(data: TGameData, userId: string) {
+  sendGameMessage(data: TGameData['HosterToController'], userId: string) {
     this.sendMessage({
       type: CommunicationDataType.GAME_ACTION_HOSTER,
       data: {
@@ -78,8 +83,21 @@ export class CommunicationHandlerFrameHoster<
     } satisfies GameDataTransfer<TGameData>);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // protected messageHandler(data: any): void {
-  //   super.messageHandler(data);
-  // }
+  broadcastGameMessage(data: TGameData['HosterToController']) {
+    for (const userId of this.connectionPlayerMap.keys()) {
+      this.sendGameMessage(data, userId);
+    }
+  }
+
+  addGameMessageListener(
+    listener: (message: GameActionResponseTransfer_HOSTER<TGameData>['data']) => void,
+  ) {
+    this.gameMessageListeners.push({
+      listener: (message) => {
+        if (message.type === CommunicationDataType.GAME_ACTION_RESPONSE_HOSTER) {
+          listener(message.data);
+        }
+      },
+    });
+  }
 }

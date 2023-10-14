@@ -6,22 +6,29 @@ import {
 } from './CommunicationDataTransfers';
 import { messageParent } from './utils/iFrameMessenger';
 
-export abstract class BaseCommunicationHandler<TGameData = unknown> {
+export abstract class BaseCommunicator<
+  TGameData extends { ControllerToHoster: unknown; HosterToController: unknown } = {
+    ControllerToHoster: unknown;
+    HosterToController: unknown;
+  },
+> {
   appMessageListeners: {
-    listener: (message: CommunicationDataTransfer) => void;
+    listener: (message: CommunicationDataTransfer<TGameData>) => void;
     type: CommunicationDataType | null;
   }[] = [];
   gameMessageListeners: {
     listener: (message: GameDataTransfer<TGameData>) => void;
   }[] = [];
 
-  protected sendMessage(message: unknown) {
+  protected sendMessage(
+    message: TGameData['HosterToController'] | TGameData['ControllerToHoster'],
+  ) {
     messageParent(message);
   }
 
   // TODO: fix this should not be accessible to the App but only the frame, but is it.
   // TODO: base classes for the App Communication handlers should not extend from this
-  sendAppMessage(message: CommunicationDataTransfer) {
+  sendAppMessage(message: CommunicationDataTransfer<TGameData>) {
     this.sendMessage(message);
   }
 
@@ -39,19 +46,21 @@ export abstract class BaseCommunicationHandler<TGameData = unknown> {
       .forEach((callbackfn) => callbackfn.listener(message));
   }
 
-  addAppMessageListener(listener: (message: CommunicationDataTransfer) => void): void;
+  addAppMessageListener(
+    listener: (message: CommunicationDataTransfer<TGameData>) => void,
+  ): void;
   addAppMessageListener<T extends CommunicationDataType>(
-    listener: (message: CommunicationDataTransfer & { type: T }) => void,
+    listener: (message: CommunicationDataTransfer<TGameData> & { type: T }) => void,
     type: T,
   ): void;
   addAppMessageListener(
-    listener: (message: CommunicationDataTransfer) => void,
+    listener: (message: CommunicationDataTransfer<TGameData>) => void,
     type: CommunicationDataType | null = null,
   ) {
     this.appMessageListeners.push({ listener, type });
   }
 
-  addGameMessageListener(listener: (message: GameDataTransfer<TGameData>) => void) {
+  addBaseGameMessageListener(listener: (message: GameDataTransfer<TGameData>) => void) {
     this.gameMessageListeners.push({ listener });
   }
 }

@@ -1,5 +1,10 @@
 // TODO: need to be split between hoster and controller
 
+export interface GameDataDefinition {
+  ControllerToHoster: unknown;
+  HosterToController: unknown;
+}
+
 export enum CommunicationDataType {
   STARTUP_HOSTER,
   CONNECTION_HOSTER,
@@ -58,37 +63,37 @@ export interface UpdateNameTransfer_HOSTER extends CommunicationDataTransfersStr
 
 // Game messages
 
-export interface GameActionTransfer_HOSTER<T = unknown>
-  extends CommunicationDataTransfersStructure {
+export interface GameActionTransfer_HOSTER<T extends GameDataDefinition>
+  extends Omit<CommunicationDataTransfersStructure, 'type'> {
   type: CommunicationDataType.GAME_ACTION_HOSTER;
   data: {
     to: string;
-    payload: T;
+    payload: T['HosterToController'];
   };
 }
 
-export interface GameActionTransfer_CONTROLLER<T = unknown>
-  extends CommunicationDataTransfersStructure {
+export interface GameActionTransfer_CONTROLLER<T extends GameDataDefinition>
+  extends Omit<CommunicationDataTransfersStructure, 'type'> {
   type: CommunicationDataType.GAME_ACTION_CONTROLLER;
   data: {
-    payload: T;
+    payload: T['ControllerToHoster'];
   };
 }
 
-export interface GameActionResponseTransfer_HOSTER<T = unknown>
-  extends CommunicationDataTransfersStructure {
+export interface GameActionResponseTransfer_HOSTER<T extends GameDataDefinition>
+  extends Omit<CommunicationDataTransfersStructure, 'type'> {
   type: CommunicationDataType.GAME_ACTION_RESPONSE_HOSTER;
   data: {
     from: string;
-    payload: T;
+    payload: T['ControllerToHoster'];
   };
 }
 
-export interface GameActionResponseTransfer_CONTROLLER<T = unknown>
-  extends CommunicationDataTransfersStructure {
+export interface GameActionResponseTransfer_CONTROLLER<T extends GameDataDefinition>
+  extends Omit<CommunicationDataTransfersStructure, 'type'> {
   type: CommunicationDataType.GAME_ACTION_RESPONSE_CONTROLLER;
   data: {
-    payload: T;
+    payload: T['HosterToController'];
   };
 }
 
@@ -101,17 +106,17 @@ export type AppDataTransfer =
   | DisconnectionTransfer_HOSTER
   | UpdateNameTransfer_HOSTER;
 
-export type GameDataTransfer<T> =
+export type GameDataTransfer<T extends GameDataDefinition> =
   | GameActionTransfer_CONTROLLER<T>
   | GameActionTransfer_HOSTER<T>
   | GameActionResponseTransfer_HOSTER<T>
   | GameActionResponseTransfer_CONTROLLER<T>;
 
-export type CommunicationDataTransfer<T = unknown> =
+export type CommunicationDataTransfer<T extends GameDataDefinition> =
   | AppDataTransfer
   | GameDataTransfer<T>;
 
-export function isCommunicationDataTransfer<T = unknown>(
+export function isCommunicationDataTransfer<T extends GameDataDefinition>(
   data: unknown,
 ): data is CommunicationDataTransfer<T> {
   return (
