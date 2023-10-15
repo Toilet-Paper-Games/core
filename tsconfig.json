@@ -23,7 +23,7 @@
       "@justinfernald/tp-games-lib": ["./"]
     },
     "typeRoots": ["./node_modules/@types", "./src/@types"],
-    "types": ["vitest/importMeta", "vite/client", "@types/w3c-generic-sensor"]
+    "types": ["vite/client"]
   },
   "include": ["src", "**/*.ts", "**/*.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]

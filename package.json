@@ -19,6 +19,7 @@
   "scripts": {
     "build": "yarn run generate-barrels && vite build",
     "test": "vitest",
+    "test:ui": "vitest --coverage --ui",
     "coverage": "vitest run --coverage",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -32,8 +33,7 @@
   },
   "dependencies": {
     "firebase": "^9.22.0",
-    "mobx": "^6.8.0",
-    "mobx-react-lite": "^3.4.3"
+    "mobx": "^6.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.1",
@@ -43,8 +43,8 @@
     "@types/w3c-generic-sensor": "^1.0.6",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.59.0",
-    "@vitejs/plugin-react": "^4.0.0",
-    "@vitest/coverage-c8": "^0.31.0",
+    "@vitest/coverage-v8": "^0.34.6",
+    "@vitest/ui": "^0.34.6",
     "barrelsby": "^2.7.0",
     "concurrently": "^8.0.1",
     "eslint": "^8.42.0",
@@ -59,11 +59,11 @@
     "pre-commit": "^1.2.2",
     "prettier": "^2.8.7",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.4",
-    "vite": "^4.3.9",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.11",
     "vite-plugin-dts": "^2.3.0",
     "vite-tsconfig-paths": "^4.2.0",
-    "vitest": "^0.31.0"
+    "vitest": "^0.34.6"
   },
   "pre-commit": "lint:pre-commit",
   "license": "UNLICENSED"

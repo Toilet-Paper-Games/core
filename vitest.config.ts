@@ -1,27 +1,18 @@
 /// <reference types="vitest" />
-import react from '@vitejs/plugin-react';
 import * as path from 'path';
-import { defineConfig, PluginOption } from 'vite';
-
-const plugins: PluginOption[] = [
-  react({
-    jsxImportSource: '@emotion/react',
-    babel: {
-      plugins: ['@emotion/babel-plugin'],
-    },
-  }),
-];
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
     includeSource: ['test/**/*.{js,ts}', 'src/**/*.{js,ts}'],
     globals: true,
-    environment: 'jsdom',
+    environment: 'node',
     coverage: {
-      provider: 'c8',
+      provider: 'v8',
+      reporter: ['html', 'text'],
     },
+    reporters: ['html', 'default'],
   },
-  plugins,
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
