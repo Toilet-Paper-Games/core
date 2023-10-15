@@ -21,10 +21,10 @@ export default defineConfig({
     sourcemap: false,
     minify: true,
     lib: {
-      entry: 'src/index.ts',
+      entry: { main: 'src/index.ts', math: 'src/common/utils/math/index.ts' },
       name: 'tp-games-lib',
       formats: ['es', 'cjs'],
-      fileName: (format) => `tp-games-lib.${format}.js`,
+      fileName: (format, entryName) => `tp-games-lib.${entryName}.${format}.js`,
     },
   },
   plugins,

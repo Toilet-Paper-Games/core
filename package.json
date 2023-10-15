@@ -8,8 +8,13 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/tp-games-lib.es.js",
-      "require": "./dist/tp-games-lib.cjs.js",
+      "import": "./dist/tp-games-lib.main.es.js",
+      "require": "./dist/tp-games-lib.main.cjs.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./math": {
+      "import": "./dist/tp-games-lib.math.es.js",
+      "require": "./dist/tp-games-lib.math.cjs.js",
       "types": "./dist/index.d.ts"
     }
   },
@@ -29,7 +34,7 @@
     "type-check": "tsc",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "generate-barrels": "barrelsby --delete -d ./src -e vite-env.d.ts"
+    "generate-barrels": "barrelsby --delete -d ./src ./src/common/utils/math -e vite-env.d.ts"
   },
   "dependencies": {
     "firebase": "^9.22.0",
