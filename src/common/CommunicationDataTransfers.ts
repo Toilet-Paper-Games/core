@@ -1,8 +1,8 @@
 // TODO: need to be split between hoster and controller
 
-export interface GameDataDefinition {
-  ControllerToHoster: unknown;
-  HosterToController: unknown;
+export interface GameDataDefinition<C2H = unknown, H2C = unknown> {
+  ControllerToHoster: C2H;
+  HosterToController: H2C;
 }
 
 export enum CommunicationDataType {
