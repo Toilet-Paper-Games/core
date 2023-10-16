@@ -1128,10 +1128,10 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.3.13.tgz#da4bfd73f49bd541d28920ab0e2bf0ee80f71c91"
   integrity sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==
 
-"@types/w3c-generic-sensor@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@types/w3c-generic-sensor/-/w3c-generic-sensor-1.0.6.tgz#3669e4a2c53ccfbf12bf9b761816cab7c3e52be0"
-  integrity sha512-l8yadNOf9j7zRsRtDVp9xRBC2mx3RJIi6eE2e43ggrE6hTJyEyOUc/MFp//k5IE36u7lBt5DXBAk6hFIq+3I8A==
+"@types/w3c-generic-sensor@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@types/w3c-generic-sensor/-/w3c-generic-sensor-1.0.7.tgz#a307518b5605fe88140211ffc68a3ab72c135ed4"
+  integrity sha512-i1TOOnqOMlSSc909h8fuv64CIcHDu9hsJs8aiUb1Rt58FU3F7ZyXb+Dy3tLy8y7Yst3z8zshPl+Ua7lbUFuNFQ==
   dependencies:
     typescript "^2.2.2"
 
