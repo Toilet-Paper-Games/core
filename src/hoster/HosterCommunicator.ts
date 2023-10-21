@@ -100,4 +100,13 @@ export class HosterCommunicator<
       },
     });
   }
+
+  messageHandler(message: unknown) {
+    super.messageHandler(message);
+
+    if (message.type === CommunicationDataType.GAME_ACTION_RESPONSE_HOSTER) {
+      this.gameMessageListeners.forEach((callbackfn) => callbackfn.listener(message));
+      return;
+    }
+  }
 }

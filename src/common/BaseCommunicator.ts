@@ -12,11 +12,11 @@ export abstract class BaseCommunicator<
     HosterToController: unknown;
   },
 > {
-  appMessageListeners: {
+  protected appMessageListeners: {
     listener: (message: CommunicationDataTransfer<TGameData>) => void;
     type: CommunicationDataType | null;
   }[] = [];
-  gameMessageListeners: {
+  protected gameMessageListeners: {
     listener: (message: GameDataTransfer<TGameData>) => void;
   }[] = [];
 
@@ -32,14 +32,11 @@ export abstract class BaseCommunicator<
     this.sendMessage(message);
   }
 
-  protected messageHandler(message: unknown) {
+  protected messageHandler(
+    message: unknown,
+  ): asserts message is CommunicationDataTransfer<TGameData> {
     if (!isCommunicationDataTransfer<TGameData>(message))
       throw new Error('Invalid data transfer');
-
-    if (message.type === CommunicationDataType.GAME_ACTION_RESPONSE_HOSTER) {
-      this.gameMessageListeners.forEach((callbackfn) => callbackfn.listener(message));
-      return;
-    }
 
     this.appMessageListeners
       .filter(({ type }) => type === null || type === message.type)
@@ -60,7 +57,9 @@ export abstract class BaseCommunicator<
     this.appMessageListeners.push({ listener, type });
   }
 
-  addBaseGameMessageListener(listener: (message: GameDataTransfer<TGameData>) => void) {
+  protected addBaseGameMessageListener(
+    listener: (message: GameDataTransfer<TGameData>) => void,
+  ) {
     this.gameMessageListeners.push({ listener });
   }
 }

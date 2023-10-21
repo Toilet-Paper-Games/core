@@ -37,4 +37,13 @@ export class ControllerCommunicator<
       },
     });
   }
+
+  messageHandler(message: unknown) {
+    super.messageHandler(message);
+
+    if (message.type === CommunicationDataType.GAME_ACTION_RESPONSE_CONTROLLER) {
+      this.gameMessageListeners.forEach((callbackfn) => callbackfn.listener(message));
+      return;
+    }
+  }
 }
