@@ -15,6 +15,7 @@ export enum CommunicationDataType {
   GAME_ACTION_RESPONSE_HOSTER,
   GAME_ACTION_RESPONSE_CONTROLLER,
   UPDATE_NAME_HOSTER,
+  UPDATE_NAME_CONTROLLER,
 }
 
 export interface CommunicationDataTransfersStructure {
@@ -57,6 +58,14 @@ export interface UpdateNameTransfer_HOSTER extends CommunicationDataTransfersStr
   type: CommunicationDataType.UPDATE_NAME_HOSTER;
   data: {
     uuid: string;
+    name: string;
+  };
+}
+
+export interface UpdateNameTransfer_CONTROLLER
+  extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.UPDATE_NAME_CONTROLLER;
+  data: {
     name: string;
   };
 }
