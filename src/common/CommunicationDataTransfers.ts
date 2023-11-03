@@ -113,7 +113,8 @@ export type AppDataTransfer =
   | LogTransfer
   | ConnectionTransfer_HOSTER
   | DisconnectionTransfer_HOSTER
-  | UpdateNameTransfer_HOSTER;
+  | UpdateNameTransfer_HOSTER
+  | UpdateNameTransfer_CONTROLLER;
 
 export type GameDataTransfer<T extends GameDataDefinition> =
   | GameActionTransfer_CONTROLLER<T>
