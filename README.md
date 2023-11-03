@@ -1,7 +1,7 @@
 # TP Games Lib
 
-[![Build/Test](https://github.com/justinfernald/tp-games-lib/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/justinfernald/tp-games-lib/actions/workflows/test.yml)
-[![Node.js Package](https://github.com/justinfernald/tp-games-lib/actions/workflows/npm-publish-github-packages.yml/badge.svg?branch=master)](https://github.com/justinfernald/tp-games-lib/actions/workflows/npm-publish-github-packages.yml)
+[![Build/Test](https://github.com/Toilet-Paper-Games/core/actions/workflows/test.yml/badge.svg)](https://github.com/Toilet-Paper-Games/core/actions/workflows/test.yml)
+[![Node.js Package](https://github.com/Toilet-Paper-Games/core/actions/workflows/npm-publish-github-packages.yml/badge.svg)](https://github.com/Toilet-Paper-Games/core/actions/workflows/npm-publish-github-packages.yml)
 
 This exists as a library used for creating games for the TP Games platform.
 
