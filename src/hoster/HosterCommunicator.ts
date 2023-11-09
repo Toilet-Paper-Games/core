@@ -22,9 +22,13 @@ export class HosterCommunicator<
   disconnectionListeners: ((player: { uuid: string }) => void)[] = [];
   nameUpdateListeners: ((player: { uuid: string; name: string }) => void)[] = [];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  messageListener: (this: Window, ev: MessageEvent<any>) => any;
+
   constructor() {
     super();
-    window.addEventListener('message', (event) => this.messageHandler(event.data));
+    this.messageListener = (event) => this.messageHandler(event.data);
+    window.addEventListener('message', this.messageListener);
 
     this.addAppMessageListener(({ data }) => {
       data.players.forEach((player) => {
@@ -61,16 +65,47 @@ export class HosterCommunicator<
     }, CommunicationDataType.UPDATE_NAME_HOSTER);
   }
 
+  destructor() {
+    window.removeEventListener('message', this.messageListener);
+  }
+
   addConnectionListener(listener: (player: { uuid: string; name: string }) => void) {
     this.connectionListeners.push(listener);
+
+    return {
+      destroy: () => {
+        const index = this.connectionListeners.indexOf(listener);
+        if (index === -1) return;
+
+        this.connectionListeners.splice(index, 1);
+      },
+    };
   }
 
   addDisconnectionListener(listener: (player: { uuid: string }) => void) {
     this.disconnectionListeners.push(listener);
+
+    return {
+      destroy: () => {
+        const index = this.disconnectionListeners.indexOf(listener);
+        if (index === -1) return;
+
+        this.disconnectionListeners.splice(index, 1);
+      },
+    };
   }
 
   addNameUpdateListener(listener: (player: { uuid: string; name: string }) => void) {
     this.nameUpdateListeners.push(listener);
+
+    return {
+      destroy: () => {
+        const index = this.nameUpdateListeners.indexOf(listener);
+        if (index === -1) return;
+
+        this.nameUpdateListeners.splice(index, 1);
+      },
+    };
   }
 
   sendGameMessage(data: TGameData['HosterToController'], userId: string) {
@@ -92,13 +127,23 @@ export class HosterCommunicator<
   addGameMessageListener(
     listener: (message: GameActionResponseTransfer_HOSTER<TGameData>['data']) => void,
   ) {
-    this.gameMessageListeners.push({
-      listener: (message) => {
+    const newListener = {
+      listener: (message: GameDataTransfer<TGameData>) => {
         if (message.type === CommunicationDataType.GAME_ACTION_RESPONSE_HOSTER) {
           listener(message.data);
         }
       },
-    });
+    };
+    this.gameMessageListeners.push(newListener);
+
+    return {
+      destroy: () => {
+        const index = this.gameMessageListeners.indexOf(newListener);
+        if (index === -1) return;
+
+        this.gameMessageListeners.splice(index, 1);
+      },
+    };
   }
 
   messageHandler(message: unknown) {

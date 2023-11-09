@@ -4,6 +4,7 @@ import {
   GameActionResponseTransfer_CONTROLLER,
   GameActionTransfer_CONTROLLER,
   GameDataDefinition,
+  GameDataTransfer,
 } from '../common/CommunicationDataTransfers';
 
 export class ControllerCommunicator<
@@ -12,9 +13,18 @@ export class ControllerCommunicator<
     HosterToController: unknown;
   },
 > extends BaseCommunicator<TGameData> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  messageListener: (this: Window, ev: MessageEvent<any>) => any;
+
   constructor() {
     super();
-    window.addEventListener('message', (event) => this.messageHandler(event.data));
+
+    this.messageListener = (event) => this.messageHandler(event.data);
+    window.addEventListener('message', this.messageListener);
+  }
+
+  destructor() {
+    window.removeEventListener('message', this.messageListener);
   }
 
   sendGameMessage(data: TGameData['ControllerToHoster']) {
@@ -29,13 +39,23 @@ export class ControllerCommunicator<
   addGameMessageListener(
     listener: (message: GameActionResponseTransfer_CONTROLLER<TGameData>['data']) => void,
   ) {
-    this.gameMessageListeners.push({
-      listener: (message) => {
+    const newListener = {
+      listener: (message: GameDataTransfer<TGameData>) => {
         if (message.type === CommunicationDataType.GAME_ACTION_RESPONSE_CONTROLLER) {
           listener(message.data);
         }
       },
-    });
+    };
+    this.gameMessageListeners.push(newListener);
+
+    return {
+      destroy: () => {
+        const index = this.gameMessageListeners.indexOf(newListener);
+        if (index === -1) return;
+
+        this.gameMessageListeners.splice(index, 1);
+      },
+    };
   }
 
   messageHandler(message: unknown) {

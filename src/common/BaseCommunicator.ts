@@ -54,12 +54,30 @@ export abstract class BaseCommunicator<
     listener: (message: CommunicationDataTransfer<TGameData>) => void,
     type: CommunicationDataType | null = null,
   ) {
-    this.appMessageListeners.push({ listener, type });
+    const newListener = { listener, type };
+    this.appMessageListeners.push(newListener);
+
+    return {
+      destroy: () => {
+        const index = this.appMessageListeners.indexOf(newListener);
+        if (index === -1) return;
+
+        this.appMessageListeners.splice(index, 1);
+      },
+    };
   }
 
-  protected addBaseGameMessageListener(
-    listener: (message: GameDataTransfer<TGameData>) => void,
-  ) {
-    this.gameMessageListeners.push({ listener });
+  protected addBaseGameMessageListener(listener: (message: GameDataTransfer<TGameData>) => void) {
+    const newListener = { listener };
+    this.gameMessageListeners.push(newListener);
+
+    return {
+      destroy: () => {
+        const index = this.gameMessageListeners.indexOf(newListener);
+        if (index === -1) return;
+
+        this.gameMessageListeners.splice(index, 1);
+      },
+    };
   }
 }
