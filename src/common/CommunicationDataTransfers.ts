@@ -16,6 +16,8 @@ export enum CommunicationDataType {
   GAME_ACTION_RESPONSE_CONTROLLER,
   UPDATE_NAME_HOSTER,
   UPDATE_NAME_CONTROLLER,
+  READY_STATUS_HOSTER,
+  READY_STATUS_CONTROLLER,
 }
 
 export interface CommunicationDataTransfersStructure {
@@ -70,6 +72,21 @@ export interface UpdateNameTransfer_CONTROLLER
   };
 }
 
+export interface ReadyStatusTransfer_HOSTER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.READY_STATUS_HOSTER;
+  data: {
+    ready: boolean;
+  };
+}
+
+export interface ReadyStatusTransfer_CONTROLLER
+  extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.READY_STATUS_CONTROLLER;
+  data: {
+    ready: boolean;
+  };
+}
+
 // Game messages
 
 export interface GameActionTransfer_HOSTER<T extends GameDataDefinition>
@@ -114,7 +131,9 @@ export type AppDataTransfer =
   | ConnectionTransfer_HOSTER
   | DisconnectionTransfer_HOSTER
   | UpdateNameTransfer_HOSTER
-  | UpdateNameTransfer_CONTROLLER;
+  | UpdateNameTransfer_CONTROLLER
+  | ReadyStatusTransfer_HOSTER
+  | ReadyStatusTransfer_CONTROLLER;
 
 export type GameDataTransfer<T extends GameDataDefinition> =
   | GameActionTransfer_CONTROLLER<T>

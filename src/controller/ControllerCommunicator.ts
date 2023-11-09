@@ -16,15 +16,37 @@ export class ControllerCommunicator<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
 
-  constructor() {
+  constructor(autoReady = false) {
     super();
 
     this.messageListener = (event) => this.messageHandler(event.data);
     window.addEventListener('message', this.messageListener);
+
+    if (autoReady) {
+      this.ready();
+    }
   }
 
   destructor() {
     window.removeEventListener('message', this.messageListener);
+  }
+
+  ready() {
+    this.sendAppMessage({
+      type: CommunicationDataType.READY_STATUS_CONTROLLER,
+      data: {
+        ready: true,
+      },
+    });
+  }
+
+  unready() {
+    this.sendAppMessage({
+      type: CommunicationDataType.READY_STATUS_CONTROLLER,
+      data: {
+        ready: false,
+      },
+    });
   }
 
   sendGameMessage(data: TGameData['ControllerToHoster']) {

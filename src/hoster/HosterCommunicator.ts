@@ -25,7 +25,7 @@ export class HosterCommunicator<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
 
-  constructor() {
+  constructor(autoReady = false) {
     super();
     this.messageListener = (event) => this.messageHandler(event.data);
     window.addEventListener('message', this.messageListener);
@@ -63,10 +63,32 @@ export class HosterCommunicator<
       const player = this.connectionPlayerMap.get(data.uuid);
       if (player) player.player.screenName = data.name;
     }, CommunicationDataType.UPDATE_NAME_HOSTER);
+
+    if (autoReady) {
+      this.ready();
+    }
   }
 
   destructor() {
     window.removeEventListener('message', this.messageListener);
+  }
+
+  ready() {
+    this.sendAppMessage({
+      type: CommunicationDataType.READY_STATUS_HOSTER,
+      data: {
+        ready: true,
+      },
+    });
+  }
+
+  unready() {
+    this.sendAppMessage({
+      type: CommunicationDataType.READY_STATUS_HOSTER,
+      data: {
+        ready: false,
+      },
+    });
   }
 
   addConnectionListener(listener: (player: { uuid: string; name: string }) => void) {
