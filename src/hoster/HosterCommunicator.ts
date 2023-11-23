@@ -21,6 +21,7 @@ export class HosterCommunicator<
   connectionListeners: ((player: { uuid: string; name: string }) => void)[] = [];
   disconnectionListeners: ((player: { uuid: string }) => void)[] = [];
   nameUpdateListeners: ((player: { uuid: string; name: string }) => void)[] = [];
+  isReady = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
@@ -74,6 +75,7 @@ export class HosterCommunicator<
   }
 
   ready() {
+    this.isReady = true;
     this.sendAppMessage({
       type: CommunicationDataType.READY_STATUS_HOSTER,
       data: {
@@ -83,6 +85,7 @@ export class HosterCommunicator<
   }
 
   unready() {
+    this.isReady = false;
     this.sendAppMessage({
       type: CommunicationDataType.READY_STATUS_HOSTER,
       data: {

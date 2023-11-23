@@ -15,6 +15,7 @@ export class ControllerCommunicator<
 > extends BaseCommunicator<TGameData> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
+  isReady = false;
 
   constructor(autoReady = false) {
     super();
@@ -32,6 +33,7 @@ export class ControllerCommunicator<
   }
 
   ready() {
+    this.isReady = true;
     this.sendAppMessage({
       type: CommunicationDataType.READY_STATUS_CONTROLLER,
       data: {
@@ -41,6 +43,7 @@ export class ControllerCommunicator<
   }
 
   unready() {
+    this.isReady = false;
     this.sendAppMessage({
       type: CommunicationDataType.READY_STATUS_CONTROLLER,
       data: {
