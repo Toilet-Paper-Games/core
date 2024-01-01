@@ -67,7 +67,7 @@
     "typescript": "^5.2.2",
     "vite": "^5.0.10",
     "vite-plugin-dts": "^3.6.4",
-    "vite-tsconfig-paths": "^4.2.1",
+    "vite-tsconfig-paths": "^4.2.3",
     "vitest": "^0.34.6"
   },
   "pre-commit": "lint:pre-commit",
