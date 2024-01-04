@@ -6,12 +6,21 @@ on:
   pull_request:
     branches:
       - master
+      
+permissions:
+  contents: write
+  pull-requests: write
+            
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [20.10.0]
+    env:
+      # Add this to your repository's secrets to use it in the workflow
+      NPMRC_TOKEN: ${{ secrets.NPMRC_SECRET }}
+      NODE_AUTH_TOKEN: ${{ secrets.NPMRC_SECRET }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -34,3 +43,14 @@ jobs:
         run: yarn build
       - name: Test
         run: yarn coverage
+  dependabot:
+    name: 'Auto Merge'
+    needs: [build] # After the build job, if it fails, it won't merge the PR.
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'}} # Detect that the PR author is dependabot
+    steps:
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --merge "$PR_URL" # Use Github CLI to merge automatically the PR
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
