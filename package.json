@@ -68,7 +68,7 @@
     "vite": "^5.0.11",
     "vite-plugin-dts": "^3.7.0",
     "vite-tsconfig-paths": "^4.2.3",
-    "vitest": "^1.1.1"
+    "vitest": "^1.1.3"
   },
   "pre-commit": "lint:pre-commit",
   "license": "UNLICENSED"
