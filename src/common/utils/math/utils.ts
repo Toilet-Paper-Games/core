@@ -140,6 +140,12 @@ if (import.meta.vitest) {
   });
 }
 
+/**
+ * Generates a random number between the specified minimum and maximum values.
+ * @param min The minimum value of the range.
+ * @param max The maximum value of the range.
+ * @returns A random number between the minimum and maximum values.
+ */
 export function random(min: number, max: number): number {
   return min + Math.random() * (max - min);
 }
@@ -153,6 +159,12 @@ if (import.meta.vitest) {
   });
 }
 
+/**
+ * Generates a random integer between the specified minimum and maximum values.
+ * @param min The minimum value of the range (inclusive).
+ * @param max The maximum value of the range (inclusive).
+ * @returns A random integer between the minimum and maximum values.
+ */
 export function randomInt(min: number, max: number): number {
   return Math.floor(random(min, max));
 }
@@ -167,6 +179,12 @@ if (import.meta.vitest) {
   });
 }
 
+/**
+ * Returns a random element from the given array.
+ * @param array - The array to choose from.
+ * @returns The randomly chosen element.
+ * @template T - The type of elements in the array.
+ */
 export function randomChoice<T>(array: T[]): T {
   return array[randomInt(0, array.length)];
 }
@@ -180,6 +198,10 @@ if (import.meta.vitest) {
   });
 }
 
+/**
+ * Generates a random boolean value.
+ * @returns {boolean} The randomly generated boolean value.
+ */
 export function randomBool(): boolean {
   return Math.random() < 0.5;
 }
@@ -191,6 +213,11 @@ if (import.meta.vitest) {
   });
 }
 
+/**
+ * Generates a random sign, either 1 or -1.
+ * 
+ * @returns The randomly generated sign.
+ */
 export function randomSign(): number {
   return randomBool() ? 1 : -1;
 }
@@ -203,6 +230,11 @@ if (import.meta.vitest) {
   });
 }
 
+/**
+ * Shuffles the elements of an array in place.
+ * @param array - The array to shuffle.
+ * @returns The shuffled array.
+ */
 export function shuffle<T>(array: T[]): T[] {
   const result = array.slice();
   for (let i = result.length - 1; i > 0; i--) {
@@ -221,6 +253,13 @@ if (import.meta.vitest) {
   });
 }
 
+/**
+ * Shuffles an array in place.
+ * 
+ * @template T The type of elements in the array.
+ * @param {T[]} array The array to be shuffled.
+ * @returns {T[]} The shuffled array.
+ */
 export function shuffleInPlace<T>(array: T[]): T[] {
   for (let i = array.length - 1; i > 0; i--) {
     const j = randomInt(0, i + 1);
