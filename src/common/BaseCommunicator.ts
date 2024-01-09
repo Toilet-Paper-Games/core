@@ -6,35 +6,50 @@ import {
 } from './CommunicationDataTransfers';
 import { messageParent } from './utils/iFrameMessenger';
 
-export abstract class BaseCommunicator<
-  TGameData extends { ControllerToHoster: unknown; HosterToController: unknown } = {
-    ControllerToHoster: unknown;
-    HosterToController: unknown;
-  },
-> {
+/**
+ * Base class for communicators in the game core.
+ * @template TGameData - The game data type that defines the communication structure between the host and the controller.
+ */
+export abstract class BaseCommunicator<TGameData extends { ControllerToHoster: unknown; HosterToController: unknown }> {
+  /**
+   * Array of app message listeners.
+   */
   protected appMessageListeners: {
     listener: (message: CommunicationDataTransfer<TGameData>) => void;
     type: CommunicationDataType | null;
   }[] = [];
+
+  /**
+   * Array of game message listeners.
+   */
   protected gameMessageListeners: {
     listener: (message: GameDataTransfer<TGameData>) => void;
   }[] = [];
 
+  /**
+   * Sends a message to the host or the controller.
+   * @param message - The message to be sent.
+   */
   protected sendMessage(
     message: TGameData['HosterToController'] | TGameData['ControllerToHoster'],
   ) {
     messageParent(message);
   }
 
-  // TODO: fix this should not be accessible to the App but only the frame, but is it.
-  // TODO: base classes for the App Communication handlers should not extend from this
+  /**
+   * Sends an app message to the host or the controller.
+   * @param message - The app message to be sent.
+   */
   sendAppMessage(message: CommunicationDataTransfer<TGameData>) {
     this.sendMessage(message);
   }
 
-  protected messageHandler(
-    message: unknown,
-  ): asserts message is CommunicationDataTransfer<TGameData> {
+  /**
+   * Handles the incoming message and notifies the app message listeners.
+   * @param message - The incoming message.
+   * @throws Error if the message is not a valid data transfer.
+   */
+  protected messageHandler(message: unknown): asserts message is CommunicationDataTransfer<TGameData> {
     if (!isCommunicationDataTransfer<TGameData>(message))
       throw new Error('Invalid data transfer');
 
@@ -43,13 +58,30 @@ export abstract class BaseCommunicator<
       .forEach((callbackfn) => callbackfn.listener(message));
   }
 
-  addAppMessageListener(
-    listener: (message: CommunicationDataTransfer<TGameData>) => void,
-  ): void;
+  /**
+   * Adds an app message listener.
+   * @param listener - The listener function to be added.
+   * @returns An object with a `destroy` method to remove the listener.
+   */
+  addAppMessageListener(listener: (message: CommunicationDataTransfer<TGameData>) => void): void;
+
+  /**
+   * Adds an app message listener with a specific message type.
+   * @param listener - The listener function to be added.
+   * @param type - The specific message type to listen for.
+   * @returns An object with a `destroy` method to remove the listener.
+   */
   addAppMessageListener<T extends CommunicationDataType>(
     listener: (message: CommunicationDataTransfer<TGameData> & { type: T }) => void,
     type: T,
   ): void;
+
+  /**
+   * Adds an app message listener.
+   * @param listener - The listener function to be added.
+   * @param type - The specific message type to listen for. If not provided, listens for all message types.
+   * @returns An object with a `destroy` method to remove the listener.
+   */
   addAppMessageListener(
     listener: (message: CommunicationDataTransfer<TGameData>) => void,
     type: CommunicationDataType | null = null,
@@ -67,6 +99,11 @@ export abstract class BaseCommunicator<
     };
   }
 
+  /**
+   * Adds a game message listener.
+   * @param listener - The listener function to be added.
+   * @returns An object with a `destroy` method to remove the listener.
+   */
   protected addBaseGameMessageListener(listener: (message: GameDataTransfer<TGameData>) => void) {
     const newListener = { listener };
     this.gameMessageListeners.push(newListener);

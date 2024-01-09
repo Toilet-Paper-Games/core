@@ -6,17 +6,22 @@ import {
   GameDataDefinition,
   GameDataTransfer,
 } from '../common/CommunicationDataTransfers';
-
+ 
 export class ControllerCommunicator<
   TGameData extends GameDataDefinition = {
     ControllerToHoster: unknown;
     HosterToController: unknown;
   },
 > extends BaseCommunicator<TGameData> {
+  /** This should not be used unless you know what you are doing */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
+  /** Do not change this value directly, use ready and unready functions */
   isReady = false;
 
+  /**
+   * @param {boolean} autoReady - Indicates whether the controller should automatically become ready. (Wait 1 second before becoming ready)
+   */
   constructor(autoReady = false) {
     super();
 
@@ -24,14 +29,23 @@ export class ControllerCommunicator<
     window.addEventListener('message', this.messageListener);
 
     if (autoReady) {
-      this.ready();
+      setTimeout(() => {
+        this.ready();
+      }, 1_000)
     }
   }
 
+  /**
+   * Removes the event listener for incoming messages.
+   * Use this when you are done with the controller.
+   */
   destructor() {
     window.removeEventListener('message', this.messageListener);
   }
 
+  /**
+   * Sets the ready status of the controller.
+   */
   ready() {
     this.isReady = true;
     this.sendAppMessage({
@@ -42,6 +56,9 @@ export class ControllerCommunicator<
     });
   }
 
+  /**
+   * Sets the controller to an unready state.
+   */
   unready() {
     this.isReady = false;
     this.sendAppMessage({
@@ -52,6 +69,11 @@ export class ControllerCommunicator<
     });
   }
 
+
+  /**
+   * Sends a game message to the hoster.
+   * @param data The game data to be sent.
+   */
   sendGameMessage(data: TGameData['ControllerToHoster']) {
     this.sendMessage({
       type: CommunicationDataType.GAME_ACTION_CONTROLLER,
@@ -61,6 +83,12 @@ export class ControllerCommunicator<
     } satisfies GameActionTransfer_CONTROLLER<TGameData>);
   }
 
+  /**
+   * Adds a game message listener to the controller communicator.
+   * The listener will be called whenever a game action response is received.
+   * @param listener - The callback function to be called when a game action response is received.
+   * @returns An object with a `destroy` method that can be used to remove the listener.
+   */
   addGameMessageListener(
     listener: (message: GameActionResponseTransfer_CONTROLLER<TGameData>['data']) => void,
   ) {
@@ -83,6 +111,7 @@ export class ControllerCommunicator<
     };
   }
 
+  /** This should not be used unless you know what you are doing */
   messageHandler(message: unknown) {
     super.messageHandler(message);
 

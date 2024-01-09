@@ -26,6 +26,9 @@ export class HosterCommunicator<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
 
+  /**
+   * @param {boolean} autoReady - Indicates whether the controller should automatically become ready. (Wait 1 second before becoming ready)
+   */
   constructor(autoReady = false) {
     super();
     this.messageListener = (event) => this.messageHandler(event.data);
@@ -66,14 +69,23 @@ export class HosterCommunicator<
     }, CommunicationDataType.UPDATE_NAME_HOSTER);
 
     if (autoReady) {
-      this.ready();
+      setTimeout(() => {
+        this.ready();
+      }, 1_000)
     }
   }
 
+  /**
+   * Removes the event listener for message events.
+   * Use this when you are done with the controller.
+   */
   destructor() {
     window.removeEventListener('message', this.messageListener);
   }
 
+  /**
+   * Sets the ready status of the controller.
+   */
   ready() {
     this.isReady = true;
     this.sendAppMessage({
@@ -84,6 +96,9 @@ export class HosterCommunicator<
     });
   }
 
+  /**
+   * Sets the controller to an unready state.
+   */
   unready() {
     this.isReady = false;
     this.sendAppMessage({
@@ -94,6 +109,12 @@ export class HosterCommunicator<
     });
   }
 
+  /**
+   * Adds a connection listener to the HosterCommunicator.
+   * 
+   * @param listener - The listener function to be added.
+   * @returns An object with a `destroy` method that can be used to remove the listener.
+   */
   addConnectionListener(listener: (player: { uuid: string; name: string }) => void) {
     this.connectionListeners.push(listener);
 
@@ -107,6 +128,12 @@ export class HosterCommunicator<
     };
   }
 
+  /**
+   * Adds a disconnection listener to the HosterCommunicator.
+   * 
+   * @param listener - The listener function to be added.
+   * @returns An object with a `destroy` method that can be used to remove the listener.
+   */
   addDisconnectionListener(listener: (player: { uuid: string }) => void) {
     this.disconnectionListeners.push(listener);
 
@@ -120,6 +147,13 @@ export class HosterCommunicator<
     };
   }
 
+  /**
+   * Adds a listener for name updates.
+   * 
+   * @param listener - The listener function to be called when a name update occurs.
+   *                   It receives an object with the player's UUID and name.
+   * @returns An object with a `destroy` method that can be called to remove the listener.
+   */
   addNameUpdateListener(listener: (player: { uuid: string; name: string }) => void) {
     this.nameUpdateListeners.push(listener);
 
@@ -133,6 +167,11 @@ export class HosterCommunicator<
     };
   }
 
+  /**
+   * Sends a game message to a specific user.
+   * @param data The game data to send.
+   * @param userId The ID of the user to send the message to.
+   */
   sendGameMessage(data: TGameData['HosterToController'], userId: string) {
     this.sendMessage({
       type: CommunicationDataType.GAME_ACTION_HOSTER,
@@ -143,12 +182,23 @@ export class HosterCommunicator<
     } satisfies GameDataTransfer<TGameData>);
   }
 
+  /**
+   * Broadcasts a game message to all connected players.
+   * 
+   * @param data The game message data to be sent.
+   */
   broadcastGameMessage(data: TGameData['HosterToController']) {
     for (const userId of this.connectionPlayerMap.keys()) {
       this.sendGameMessage(data, userId);
     }
   }
 
+  /**
+   * Adds a game message listener.
+   * 
+   * @param listener - The callback function to be called when a game message is received.
+   * @returns An object with a `destroy` method that can be used to remove the listener.
+   */
   addGameMessageListener(
     listener: (message: GameActionResponseTransfer_HOSTER<TGameData>['data']) => void,
   ) {
@@ -171,6 +221,7 @@ export class HosterCommunicator<
     };
   }
 
+  /** This should not be used unless you know what you are doing */
   messageHandler(message: unknown) {
     super.messageHandler(message);
 
