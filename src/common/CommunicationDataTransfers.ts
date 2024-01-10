@@ -145,6 +145,11 @@ export type CommunicationDataTransfer<T extends GameDataDefinition> =
   | AppDataTransfer
   | GameDataTransfer<T>;
 
+/**
+ * Checks if the provided data is a valid CommunicationDataTransfer object.
+ * @param data The data to be checked.
+ * @returns True if the data is a valid CommunicationDataTransfer object, false otherwise.
+ */
 export function isCommunicationDataTransfer<T extends GameDataDefinition>(
   data: unknown,
 ): data is CommunicationDataTransfer<T> {
