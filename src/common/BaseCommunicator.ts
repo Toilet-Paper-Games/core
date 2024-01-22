@@ -63,7 +63,9 @@ export abstract class BaseCommunicator<TGameData extends { ControllerToHoster: u
    * @param listener - The listener function to be added.
    * @returns An object with a `destroy` method to remove the listener.
    */
-  addAppMessageListener(listener: (message: CommunicationDataTransfer<TGameData>) => void): void;
+  addAppMessageListener(listener: (message: CommunicationDataTransfer<TGameData>) => void): {
+    destroy: () => void;
+  };
 
   /**
    * Adds an app message listener with a specific message type.
@@ -74,7 +76,9 @@ export abstract class BaseCommunicator<TGameData extends { ControllerToHoster: u
   addAppMessageListener<T extends CommunicationDataType>(
     listener: (message: CommunicationDataTransfer<TGameData> & { type: T }) => void,
     type: T,
-  ): void;
+  ): {
+    destroy: () => void;
+  };
 
   /**
    * Adds an app message listener.
