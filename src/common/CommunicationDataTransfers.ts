@@ -18,6 +18,7 @@ export enum CommunicationDataType {
   UPDATE_NAME_CONTROLLER,
   READY_STATUS_HOSTER,
   READY_STATUS_CONTROLLER,
+  UPDATE_PLAYER_READY_STATUS_HOSTER,
 }
 
 export interface CommunicationDataTransfersStructure {

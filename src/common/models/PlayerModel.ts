@@ -6,7 +6,9 @@ import { makeAutoObservable } from 'mobx';
 export class PlayerModel {
   screenName: string | null;
   image = '';
-  score = 0;
+
+  /** For when your controller is ready to play the game */
+  ready = false;
   active = true;
 
   /**
