@@ -48,8 +48,8 @@
     "@types/w3c-generic-sensor": "^1.0.9",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "@vitest/coverage-v8": "^1.4.0",
-    "@vitest/ui": "^1.4.0",
+    "@vitest/coverage-v8": "^1.5.0",
+    "@vitest/ui": "^1.5.0",
     "barrelsby": "^2.8.1",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
@@ -68,7 +68,7 @@
     "vite": "^5.2.8",
     "vite-plugin-dts": "^3.8.1",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^1.4.0"
+    "vitest": "^1.5.0"
   },
   "pre-commit": "lint:pre-commit",
   "license": "UNLICENSED"
