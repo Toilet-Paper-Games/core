@@ -1,6 +1,6 @@
 {
   "name": "@toilet-paper-games/core",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "author": "Justin Fernald",
   "homepage": "https://Toilet-Paper-Games.github.io/core",
   "files": [
@@ -30,7 +30,6 @@
     "lint:fix": "eslint . --fix",
     "lint:format": "prettier . --list-different --write",
     "lint": "yarn lint:format && yarn lint:fix ",
-    "lint:pre-commit": "eslint . --max-warnings=0",
     "type-check": "tsc",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
@@ -70,6 +69,5 @@
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.0.3"
   },
-  "pre-commit": "lint:pre-commit",
   "license": "UNLICENSED"
 }
