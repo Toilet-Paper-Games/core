@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+import { Subscription } from '../types';
 
 /**
  * Represents a player in the game.
@@ -10,6 +11,8 @@ export class PlayerModel {
   /** For when your controller is ready to play the game */
   ready = false;
   active = true;
+
+  subscription: Subscription = Subscription.Free;
 
   /**
    * Creates a new instance of the PlayerModel class.
