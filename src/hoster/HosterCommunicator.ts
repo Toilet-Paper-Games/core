@@ -38,7 +38,7 @@ export class HosterCommunicator<
       data.players.forEach((player) => {
         this.connectionPlayerMap.set(player.uuid, {
           uuid: player.uuid,
-          player: new PlayerModel(player.name),
+          player: new PlayerModel(player.name, player.uuid),
           active: true,
         });
       });
@@ -49,7 +49,7 @@ export class HosterCommunicator<
 
       this.connectionPlayerMap.set(data.uuid, {
         uuid: data.uuid,
-        player: new PlayerModel(data.name),
+        player: new PlayerModel(data.name, data.uuid),
         active: true,
       });
     }, CommunicationDataType.CONNECTION_HOSTER);
