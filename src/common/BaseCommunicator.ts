@@ -10,7 +10,9 @@ import { messageParent } from './utils/iFrameMessenger';
  * Base class for communicators in the game core.
  * @template TGameData - The game data type that defines the communication structure between the host and the controller.
  */
-export abstract class BaseCommunicator<TGameData extends { ControllerToHoster: unknown; HosterToController: unknown }> {
+export abstract class BaseCommunicator<
+  TGameData extends { ControllerToHoster: unknown; HosterToController: unknown },
+> {
   /**
    * Array of app message listeners.
    */
@@ -49,7 +51,9 @@ export abstract class BaseCommunicator<TGameData extends { ControllerToHoster: u
    * @param message - The incoming message.
    * @throws Error if the message is not a valid data transfer.
    */
-  protected messageHandler(message: unknown): asserts message is CommunicationDataTransfer<TGameData> {
+  protected messageHandler(
+    message: unknown,
+  ): asserts message is CommunicationDataTransfer<TGameData> {
     if (!isCommunicationDataTransfer<TGameData>(message))
       throw new Error('Invalid data transfer');
 
@@ -63,7 +67,9 @@ export abstract class BaseCommunicator<TGameData extends { ControllerToHoster: u
    * @param listener - The listener function to be added.
    * @returns An object with a `destroy` method to remove the listener.
    */
-  addAppMessageListener(listener: (message: CommunicationDataTransfer<TGameData>) => void): {
+  addAppMessageListener(
+    listener: (message: CommunicationDataTransfer<TGameData>) => void,
+  ): {
     destroy: () => void;
   };
 
@@ -108,7 +114,9 @@ export abstract class BaseCommunicator<TGameData extends { ControllerToHoster: u
    * @param listener - The listener function to be added.
    * @returns An object with a `destroy` method to remove the listener.
    */
-  protected addBaseGameMessageListener(listener: (message: GameDataTransfer<TGameData>) => void) {
+  protected addBaseGameMessageListener(
+    listener: (message: GameDataTransfer<TGameData>) => void,
+  ) {
     const newListener = { listener };
     this.gameMessageListeners.push(newListener);
 

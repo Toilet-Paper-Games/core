@@ -12,6 +12,8 @@ export class PlayerModel {
   ready = false;
   active = true;
 
+  isHost = false;
+
   subscription: Subscription = Subscription.Free;
 
   /**

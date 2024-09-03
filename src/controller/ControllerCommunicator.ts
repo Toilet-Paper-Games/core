@@ -6,7 +6,7 @@ import {
   GameDataDefinition,
   GameDataTransfer,
 } from '../common/CommunicationDataTransfers';
- 
+
 export class ControllerCommunicator<
   TGameData extends GameDataDefinition = {
     ControllerToHoster: unknown;
@@ -31,7 +31,7 @@ export class ControllerCommunicator<
     if (autoReady) {
       setTimeout(() => {
         this.ready();
-      }, 1_000)
+      }, 1_000);
     }
   }
 
@@ -68,7 +68,6 @@ export class ControllerCommunicator<
       },
     });
   }
-
 
   /**
    * Sends a game message to the hoster.
@@ -109,6 +108,14 @@ export class ControllerCommunicator<
         this.gameMessageListeners.splice(index, 1);
       },
     };
+  }
+
+  endGame() {
+    this.sendAppMessage({ type: CommunicationDataType.END_GAME_CONTROLLER, data: {} });
+  }
+
+  reloadGame() {
+    this.sendAppMessage({ type: CommunicationDataType.RELOAD_GAME_CONTROLLER, data: {} });
   }
 
   /** This should not be used unless you know what you are doing */
