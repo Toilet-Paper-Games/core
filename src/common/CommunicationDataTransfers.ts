@@ -19,6 +19,10 @@ export enum CommunicationDataType {
   READY_STATUS_HOSTER,
   READY_STATUS_CONTROLLER,
   UPDATE_PLAYER_READY_STATUS_HOSTER,
+  END_GAME_HOSTER,
+  END_GAME_CONTROLLER,
+  RELOAD_GAME_HOSTER,
+  RELOAD_GAME_CONTROLLER,
 }
 
 export interface CommunicationDataTransfersStructure {
@@ -124,6 +128,26 @@ export interface GameActionResponseTransfer_CONTROLLER<T extends GameDataDefinit
   };
 }
 
+export interface EndGame_HOSTER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.END_GAME_HOSTER;
+  data: {};
+}
+
+export interface EndGame_CONTROLLER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.END_GAME_CONTROLLER;
+  data: {};
+}
+
+export interface ReloadGame_HOSTER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.RELOAD_GAME_HOSTER;
+  data: {};
+}
+
+export interface ReloadGame_CONTROLLER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.RELOAD_GAME_CONTROLLER;
+  data: {};
+}
+
 // Transfer listings
 
 export type AppDataTransfer =
@@ -134,7 +158,11 @@ export type AppDataTransfer =
   | UpdateNameTransfer_HOSTER
   | UpdateNameTransfer_CONTROLLER
   | ReadyStatusTransfer_HOSTER
-  | ReadyStatusTransfer_CONTROLLER;
+  | ReadyStatusTransfer_CONTROLLER
+  | EndGame_HOSTER
+  | EndGame_CONTROLLER
+  | ReloadGame_HOSTER
+  | ReloadGame_CONTROLLER;
 
 export type GameDataTransfer<T extends GameDataDefinition> =
   | GameActionTransfer_CONTROLLER<T>

@@ -71,7 +71,7 @@ export class HosterCommunicator<
     if (autoReady) {
       setTimeout(() => {
         this.ready();
-      }, 1_000)
+      }, 1_000);
     }
   }
 
@@ -111,7 +111,7 @@ export class HosterCommunicator<
 
   /**
    * Adds a connection listener to the HosterCommunicator.
-   * 
+   *
    * @param listener - The listener function to be added.
    * @returns An object with a `destroy` method that can be used to remove the listener.
    */
@@ -130,7 +130,7 @@ export class HosterCommunicator<
 
   /**
    * Adds a disconnection listener to the HosterCommunicator.
-   * 
+   *
    * @param listener - The listener function to be added.
    * @returns An object with a `destroy` method that can be used to remove the listener.
    */
@@ -149,7 +149,7 @@ export class HosterCommunicator<
 
   /**
    * Adds a listener for name updates.
-   * 
+   *
    * @param listener - The listener function to be called when a name update occurs.
    *                   It receives an object with the player's UUID and name.
    * @returns An object with a `destroy` method that can be called to remove the listener.
@@ -184,7 +184,7 @@ export class HosterCommunicator<
 
   /**
    * Broadcasts a game message to all connected players.
-   * 
+   *
    * @param data The game message data to be sent.
    */
   broadcastGameMessage(data: TGameData['HosterToController']) {
@@ -195,7 +195,7 @@ export class HosterCommunicator<
 
   /**
    * Adds a game message listener.
-   * 
+   *
    * @param listener - The callback function to be called when a game message is received.
    * @returns An object with a `destroy` method that can be used to remove the listener.
    */
@@ -219,6 +219,14 @@ export class HosterCommunicator<
         this.gameMessageListeners.splice(index, 1);
       },
     };
+  }
+
+  endGame() {
+    this.sendAppMessage({ type: CommunicationDataType.END_GAME_HOSTER, data: {} });
+  }
+
+  reloadGame() {
+    this.sendAppMessage({ type: CommunicationDataType.RELOAD_GAME_HOSTER, data: {} });
   }
 
   /** This should not be used unless you know what you are doing */
