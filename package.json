@@ -1,6 +1,6 @@
 {
   "name": "@toilet-paper-games/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Justin Fernald",
   "homepage": "https://Toilet-Paper-Games.github.io/core",
   "files": [
@@ -36,7 +36,9 @@
     "generate-barrels": "barrelsby --delete -d ./src ./src/common/utils/math -e vite-env.d.ts"
   },
   "dependencies": {
-    "firebase": "^10.12.4",
+    "firebase": "^10.12.4"
+  },
+  "peerDependencies": {
     "mobx": "^6.13.1"
   },
   "devDependencies": {
@@ -60,6 +62,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-storybook": "^0.8.0",
     "jsdom": "^25.0.0",
+    "mobx": "^6.13.1",
     "pre-commit": "^1.2.2",
     "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
