@@ -9,8 +9,8 @@ export class PlayerModel {
   screenName: string | null;
   /** String ID connecting the player to their connection */
   readonly connectionId: string;
-  
-  image = '';
+
+  image: string | null = null;
 
   /** For when your controller is ready to play the game */
   ready = false;
@@ -24,7 +24,7 @@ export class PlayerModel {
    * Creates a new instance of the PlayerModel class.
    * @param screenName - The screen name of the player.
    */
-  constructor(screenName: string | null, connectionId:string) {
+  constructor(screenName: string | null, connectionId: string) {
     makeAutoObservable(this);
     this.screenName = screenName;
     this.connectionId = connectionId;
