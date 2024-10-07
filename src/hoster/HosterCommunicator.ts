@@ -38,6 +38,8 @@ export class HosterCommunicator<
           player: new PlayerModel(player.name, player.uuid),
         });
       });
+
+      this.connectionId = data.connectionId;
     }, CommunicationDataType.STARTUP_HOSTER);
 
     this.addAppMessageListener(({ data }) => {

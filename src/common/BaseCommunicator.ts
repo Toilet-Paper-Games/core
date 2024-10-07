@@ -13,6 +13,8 @@ import { messageParent } from './utils/iFrameMessenger';
 export abstract class BaseCommunicator<
   TGameData extends { ControllerToHoster: unknown; HosterToController: unknown },
 > {
+  connectionId: string | null = null;
+
   /**
    * Array of app message listeners.
    */

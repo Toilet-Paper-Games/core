@@ -7,6 +7,7 @@ export interface GameDataDefinition<C2H = unknown, H2C = unknown> {
 
 export enum CommunicationDataType {
   STARTUP_HOSTER,
+  STARTUP_CONTROLLER,
   CONNECTION_HOSTER,
   DISCONNECTION_HOSTER,
   DEBUG,
@@ -41,7 +42,15 @@ export interface LogTransfer extends CommunicationDataTransfersStructure {
 export interface StartupTransfer_HOSTER extends CommunicationDataTransfersStructure {
   type: CommunicationDataType.STARTUP_HOSTER;
   data: {
+    connectionId: string;
     players: { uuid: string; name: string }[];
+  };
+}
+
+export interface StartupTransfer_CONTROLLER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.STARTUP_CONTROLLER;
+  data: {
+    connectionId: string;
   };
 }
 
@@ -152,6 +161,7 @@ export interface ReloadGame_CONTROLLER extends CommunicationDataTransfersStructu
 
 export type AppDataTransfer =
   | StartupTransfer_HOSTER
+  | StartupTransfer_CONTROLLER
   | LogTransfer
   | ConnectionTransfer_HOSTER
   | DisconnectionTransfer_HOSTER

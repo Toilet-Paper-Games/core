@@ -28,6 +28,10 @@ export class ControllerCommunicator<
     this.messageListener = (event) => this.messageHandler(event.data);
     window.addEventListener('message', this.messageListener);
 
+    this.addAppMessageListener(({ data }) => {
+      this.connectionId = data.connectionId;
+    }, CommunicationDataType.STARTUP_CONTROLLER);
+
     if (autoReady) {
       setTimeout(() => {
         this.ready();
