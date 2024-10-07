@@ -14,6 +14,8 @@ export class PlayerModel {
 
   /** For when your controller is ready to play the game */
   ready = false;
+
+  /** True is the user is actively playing and not disconnected */
   active = true;
 
   isHost = false;

@@ -13,10 +13,7 @@ export class HosterCommunicator<
     HosterToController: unknown;
   },
 > extends BaseCommunicator<GameDataDefinition> {
-  connectionPlayerMap: Map<
-    string,
-    { uuid: string; player: PlayerModel; active: boolean }
-  > = new Map();
+  connectionPlayerMap: Map<string, { uuid: string; player: PlayerModel }> = new Map();
 
   connectionListeners: ((player: { uuid: string; name: string }) => void)[] = [];
   disconnectionListeners: ((player: { uuid: string }) => void)[] = [];
@@ -39,7 +36,6 @@ export class HosterCommunicator<
         this.connectionPlayerMap.set(player.uuid, {
           uuid: player.uuid,
           player: new PlayerModel(player.name, player.uuid),
-          active: true,
         });
       });
     }, CommunicationDataType.STARTUP_HOSTER);
@@ -50,7 +46,6 @@ export class HosterCommunicator<
       this.connectionPlayerMap.set(data.uuid, {
         uuid: data.uuid,
         player: new PlayerModel(data.name, data.uuid),
-        active: true,
       });
     }, CommunicationDataType.CONNECTION_HOSTER);
 
@@ -58,7 +53,7 @@ export class HosterCommunicator<
       this.disconnectionListeners.forEach((callbackfn) => callbackfn(data));
 
       const player = this.connectionPlayerMap.get(data.uuid);
-      if (player) player.active = false;
+      if (player) player.player.active = false;
     }, CommunicationDataType.DISCONNECTION_HOSTER);
 
     this.addAppMessageListener(({ data }) => {
