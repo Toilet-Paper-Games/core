@@ -18,6 +18,15 @@ export class ControllerCommunicator<
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
   /** Do not change this value directly, use ready and unready functions */
   isReady = false;
+  devMode?: boolean;
+  hosterReady = false;
+  joinCode?: string;
+
+  addHosterReadyListener(listener: (ready: boolean) => void) {
+    return this.addAppMessageListener(({ data }) => {
+      listener(data.hosterReady);
+    }, CommunicationDataType.AppData_CONTROLLER);
+  }
 
   /**
    * @param {boolean} autoReady - Indicates whether the controller should automatically become ready. (Wait 1 second before becoming ready)
@@ -29,9 +38,21 @@ export class ControllerCommunicator<
     window.addEventListener('message', this.messageListener);
 
     this.addAppMessageListener(({ data }) => {
-      this.connectionId = data.connectionId;
-    }, CommunicationDataType.STARTUP_CONTROLLER);
+      this.hosterReady = data.hosterReady;
 
+      this.devMode = data.devMode;
+      this.joinCode = data.joinCode;
+
+      this.connectionId = data.connectionId;
+    }, CommunicationDataType.AppData_CONTROLLER);
+
+    this.sendAppMessage({
+      type: CommunicationDataType.INIT_GAME_CONTROLLER,
+      data: {},
+    });
+
+    // TODO: This should eventually be removed as it was added for backwards compatibility
+    // with the old system.
     if (autoReady) {
       setTimeout(() => {
         this.ready();
@@ -61,7 +82,7 @@ export class ControllerCommunicator<
   }
 
   /**
-   * Sets the controller to an unready state.
+   * Sets the controller to an unready state. Note: this should never have to happen
    */
   unready() {
     this.isReady = false;
