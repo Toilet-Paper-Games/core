@@ -1,25 +1,29 @@
 // TODO: need to be split between hoster and controller
 
+import { PlayerDto } from './models/PlayerModel';
+
 export interface GameDataDefinition<C2H = unknown, H2C = unknown> {
   ControllerToHoster: C2H;
   HosterToController: H2C;
 }
 
 export enum CommunicationDataType {
-  STARTUP_HOSTER,
-  STARTUP_CONTROLLER,
-  CONNECTION_HOSTER,
-  DISCONNECTION_HOSTER,
   DEBUG,
+
+  AppData_HOSTER,
+  AppData_CONTROLLER,
+
+  INIT_GAME_HOSTER,
+  INIT_GAME_CONTROLLER,
+
+  READY_STATUS_HOSTER,
+  READY_STATUS_CONTROLLER,
+
   GAME_ACTION_HOSTER,
   GAME_ACTION_CONTROLLER,
   GAME_ACTION_RESPONSE_HOSTER,
   GAME_ACTION_RESPONSE_CONTROLLER,
-  UPDATE_NAME_HOSTER,
-  UPDATE_NAME_CONTROLLER,
-  READY_STATUS_HOSTER,
-  READY_STATUS_CONTROLLER,
-  UPDATE_PLAYER_READY_STATUS_HOSTER,
+
   END_GAME_HOSTER,
   END_GAME_CONTROLLER,
   RELOAD_GAME_HOSTER,
@@ -39,51 +43,38 @@ export interface LogTransfer extends CommunicationDataTransfersStructure {
   data: any;
 }
 
-export interface StartupTransfer_HOSTER extends CommunicationDataTransfersStructure {
-  type: CommunicationDataType.STARTUP_HOSTER;
+/** Sent at the initialization of a hoster communicator and anytime a value is changed */
+export interface AppDataTransfer_HOSTER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.AppData_HOSTER;
   data: {
     connectionId: string;
-    players: { uuid: string; name: string }[];
+    players: PlayerDto[];
+    joinCode: string;
+    devMode: boolean;
   };
 }
 
-export interface StartupTransfer_CONTROLLER extends CommunicationDataTransfersStructure {
-  type: CommunicationDataType.STARTUP_CONTROLLER;
+/** Sent at the initialization of a controller communicator and anytime a value is changed */
+export interface AppDataTransfer_CONTROLLER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.AppData_CONTROLLER;
   data: {
+    hosterReady: boolean;
     connectionId: string;
+    joinCode: string;
+    devMode: boolean;
   };
 }
 
-export interface ConnectionTransfer_HOSTER extends CommunicationDataTransfersStructure {
-  type: CommunicationDataType.CONNECTION_HOSTER;
-  data: {
-    uuid: string;
-    name: string;
-  };
+/** This message will be sent as soon as the communicator in constructed */
+export interface InitGameTransfer_HOSTER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.INIT_GAME_HOSTER;
+  data: {};
 }
 
-export interface DisconnectionTransfer_HOSTER
-  extends CommunicationDataTransfersStructure {
-  type: CommunicationDataType.DISCONNECTION_HOSTER;
-  data: {
-    uuid: string;
-  };
-}
-
-export interface UpdateNameTransfer_HOSTER extends CommunicationDataTransfersStructure {
-  type: CommunicationDataType.UPDATE_NAME_HOSTER;
-  data: {
-    uuid: string;
-    name: string;
-  };
-}
-
-export interface UpdateNameTransfer_CONTROLLER
-  extends CommunicationDataTransfersStructure {
-  type: CommunicationDataType.UPDATE_NAME_CONTROLLER;
-  data: {
-    name: string;
-  };
+/** This message will be sent as soon as the communicator in constructed */
+export interface InitGameTransfer_CONTROLLER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.INIT_GAME_CONTROLLER;
+  data: {};
 }
 
 export interface ReadyStatusTransfer_HOSTER extends CommunicationDataTransfersStructure {
@@ -160,13 +151,11 @@ export interface ReloadGame_CONTROLLER extends CommunicationDataTransfersStructu
 // Transfer listings
 
 export type AppDataTransfer =
-  | StartupTransfer_HOSTER
-  | StartupTransfer_CONTROLLER
+  | AppDataTransfer_HOSTER
+  | AppDataTransfer_CONTROLLER
   | LogTransfer
-  | ConnectionTransfer_HOSTER
-  | DisconnectionTransfer_HOSTER
-  | UpdateNameTransfer_HOSTER
-  | UpdateNameTransfer_CONTROLLER
+  | InitGameTransfer_HOSTER
+  | InitGameTransfer_CONTROLLER
   | ReadyStatusTransfer_HOSTER
   | ReadyStatusTransfer_CONTROLLER
   | EndGame_HOSTER

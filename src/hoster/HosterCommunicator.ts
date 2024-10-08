@@ -5,7 +5,7 @@ import {
   GameDataDefinition,
   GameDataTransfer,
 } from '../common/CommunicationDataTransfers';
-import { PlayerModel } from '../common/models/PlayerModel';
+import { PlayerStore } from './PlayerStore';
 
 export class HosterCommunicator<
   TGameData extends GameDataDefinition = {
@@ -13,15 +13,28 @@ export class HosterCommunicator<
     HosterToController: unknown;
   },
 > extends BaseCommunicator<GameDataDefinition> {
-  connectionPlayerMap: Map<string, { uuid: string; player: PlayerModel }> = new Map();
+  playerStore = new PlayerStore();
 
-  connectionListeners: ((player: { uuid: string; name: string }) => void)[] = [];
-  disconnectionListeners: ((player: { uuid: string }) => void)[] = [];
-  nameUpdateListeners: ((player: { uuid: string; name: string }) => void)[] = [];
+  /** Don't write to this */
   isReady = false;
+
+  /** Don't write to this */
+  devMode?: boolean;
+  /** Don't write to this */
+  joinCode?: string;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
+
+  /** Alias to playerStore.players */
+  get players() {
+    return this.playerStore.players;
+  }
+
+  /** Alias to playerStore.playerMap */
+  get playerMap() {
+    return this.playerStore.playerMap;
+  }
 
   /**
    * @param {boolean} autoReady - Indicates whether the controller should automatically become ready. (Wait 1 second before becoming ready)
@@ -32,39 +45,21 @@ export class HosterCommunicator<
     window.addEventListener('message', this.messageListener);
 
     this.addAppMessageListener(({ data }) => {
-      data.players.forEach((player) => {
-        this.connectionPlayerMap.set(player.uuid, {
-          uuid: player.uuid,
-          player: new PlayerModel(player.name, player.uuid),
-        });
-      });
+      this.playerStore.smartUpdatePlayers(data.players);
+
+      this.devMode = data.devMode;
+      this.joinCode = data.joinCode;
 
       this.connectionId = data.connectionId;
-    }, CommunicationDataType.STARTUP_HOSTER);
+    }, CommunicationDataType.AppData_HOSTER);
 
-    this.addAppMessageListener(({ data }) => {
-      this.connectionListeners.forEach((callbackfn) => callbackfn(data));
+    this.sendAppMessage({
+      type: CommunicationDataType.INIT_GAME_HOSTER,
+      data: {},
+    });
 
-      this.connectionPlayerMap.set(data.uuid, {
-        uuid: data.uuid,
-        player: new PlayerModel(data.name, data.uuid),
-      });
-    }, CommunicationDataType.CONNECTION_HOSTER);
-
-    this.addAppMessageListener(({ data }) => {
-      this.disconnectionListeners.forEach((callbackfn) => callbackfn(data));
-
-      const player = this.connectionPlayerMap.get(data.uuid);
-      if (player) player.player.active = false;
-    }, CommunicationDataType.DISCONNECTION_HOSTER);
-
-    this.addAppMessageListener(({ data }) => {
-      this.nameUpdateListeners.forEach((callbackfn) => callbackfn(data));
-
-      const player = this.connectionPlayerMap.get(data.uuid);
-      if (player) player.player.screenName = data.name;
-    }, CommunicationDataType.UPDATE_NAME_HOSTER);
-
+    // TODO: This should eventually be removed as it was added for backwards compatibility
+    // with the old system.
     if (autoReady) {
       setTimeout(() => {
         this.ready();
@@ -94,7 +89,7 @@ export class HosterCommunicator<
   }
 
   /**
-   * Sets the controller to an unready state.
+   * Sets the controller to an unready state. Note: this should never have to happen
    */
   unready() {
     this.isReady = false;
@@ -104,64 +99,6 @@ export class HosterCommunicator<
         ready: false,
       },
     });
-  }
-
-  /**
-   * Adds a connection listener to the HosterCommunicator.
-   *
-   * @param listener - The listener function to be added.
-   * @returns An object with a `destroy` method that can be used to remove the listener.
-   */
-  addConnectionListener(listener: (player: { uuid: string; name: string }) => void) {
-    this.connectionListeners.push(listener);
-
-    return {
-      destroy: () => {
-        const index = this.connectionListeners.indexOf(listener);
-        if (index === -1) return;
-
-        this.connectionListeners.splice(index, 1);
-      },
-    };
-  }
-
-  /**
-   * Adds a disconnection listener to the HosterCommunicator.
-   *
-   * @param listener - The listener function to be added.
-   * @returns An object with a `destroy` method that can be used to remove the listener.
-   */
-  addDisconnectionListener(listener: (player: { uuid: string }) => void) {
-    this.disconnectionListeners.push(listener);
-
-    return {
-      destroy: () => {
-        const index = this.disconnectionListeners.indexOf(listener);
-        if (index === -1) return;
-
-        this.disconnectionListeners.splice(index, 1);
-      },
-    };
-  }
-
-  /**
-   * Adds a listener for name updates.
-   *
-   * @param listener - The listener function to be called when a name update occurs.
-   *                   It receives an object with the player's UUID and name.
-   * @returns An object with a `destroy` method that can be called to remove the listener.
-   */
-  addNameUpdateListener(listener: (player: { uuid: string; name: string }) => void) {
-    this.nameUpdateListeners.push(listener);
-
-    return {
-      destroy: () => {
-        const index = this.nameUpdateListeners.indexOf(listener);
-        if (index === -1) return;
-
-        this.nameUpdateListeners.splice(index, 1);
-      },
-    };
   }
 
   /**
@@ -185,8 +122,10 @@ export class HosterCommunicator<
    * @param data The game message data to be sent.
    */
   broadcastGameMessage(data: TGameData['HosterToController']) {
-    for (const userId of this.connectionPlayerMap.keys()) {
-      this.sendGameMessage(data, userId);
+    // TODO: create a dedicated method for broadcasting messages
+    // such that less messages are sent across the iframe
+    for (const player of this.players) {
+      this.sendGameMessage(data, player.connectionId);
     }
   }
 
