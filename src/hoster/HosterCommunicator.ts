@@ -15,6 +15,10 @@ export class HosterCommunicator<
 > extends BaseCommunicator<GameDataDefinition> {
   playerStore = new PlayerStore();
 
+  playerPingMap: Map<string, number> = new Map();
+
+  readonly startTime = Date.now();
+
   /** Don't write to this */
   isReady = false;
 
@@ -115,6 +119,63 @@ export class HosterCommunicator<
         ready: false,
       },
     });
+  }
+
+  setupPingPong() {
+    const requestPings = () => {
+      const activePlayers = this.players.filter((player) => player.active);
+
+      for (const player of activePlayers) {
+        this.fetchPing(player.connectionId).then((playerPing) => {
+          this.playerPingMap.set(player.connectionId, playerPing);
+        });
+      }
+    };
+
+    setInterval(requestPings, 5_000);
+  }
+
+  async fetchPing(playerId: string) {
+    const id = Math.random().toString(36).slice(2);
+
+    const currentTimePing = Date.now();
+
+    this.sendAppMessage({
+      type: CommunicationDataType.PING_HOSTER,
+      data: {
+        id,
+        playerId,
+        timeSinceStart: currentTimePing - this.startTime,
+        hosterTime: currentTimePing,
+      },
+    });
+
+    const { promise: controllerPongPromise, resolve } = Promise.withResolvers<void>();
+
+    const pongControllerListener = this.addAppMessageListener((message) => {
+      if (message.data.playerId === playerId && message.data.id === id) {
+        resolve();
+      }
+    }, CommunicationDataType.PONG_CONTROLLER);
+
+    await controllerPongPromise;
+
+    pongControllerListener.destroy();
+
+    const pingMs = Date.now() - currentTimePing;
+    const currentTimePong = Date.now();
+    this.sendAppMessage({
+      type: CommunicationDataType.PONG_HOSTER,
+      data: {
+        id,
+        playerId,
+        pingMs,
+        timeSinceStart: currentTimePong - this.startTime,
+        hosterTime: currentTimePong,
+      },
+    });
+
+    return pingMs;
   }
 
   /**

@@ -7,6 +7,13 @@ import {
   GameDataTransfer,
 } from '../common/CommunicationDataTransfers';
 
+export interface PingData {
+  ping: number;
+  lastPoll: number;
+  timeSinceStart: number;
+  timeSinceStartPingAdjusted: number;
+}
+
 export class ControllerCommunicator<
   TGameData extends GameDataDefinition = {
     ControllerToHoster: unknown;
@@ -21,6 +28,9 @@ export class ControllerCommunicator<
   devMode?: boolean;
   hosterReady = false;
   joinCode?: string;
+
+  /** Current ping (time from hoster to controller and controller to hoster combined) */
+  pingData: PingData | null = null;
 
   addHosterReadyListener(listener: (ready: boolean) => void) {
     return this.addAppMessageListener(({ data }) => {
@@ -66,6 +76,8 @@ export class ControllerCommunicator<
       },
     });
 
+    this.setupPingPong();
+
     // TODO: This should eventually be removed as it was added for backwards compatibility
     // with the old system.
     if (autoReady) {
@@ -81,6 +93,28 @@ export class ControllerCommunicator<
    */
   destructor() {
     window.removeEventListener('message', this.messageListener);
+  }
+
+  private setupPingPong() {
+    this.addAppMessageListener(({ data }) => {
+      this.sendAppMessage({
+        type: CommunicationDataType.PONG_CONTROLLER,
+        data: {
+          id: data.id,
+          controllerTime: Date.now(),
+          playerId: data.playerId,
+        },
+      });
+    }, CommunicationDataType.PING_HOSTER);
+
+    this.addAppMessageListener(({ data }) => {
+      this.pingData = {
+        ping: data.pingMs,
+        lastPoll: Date.now(),
+        timeSinceStart: data.timeSinceStart,
+        timeSinceStartPingAdjusted: data.timeSinceStart + data.pingMs / 2,
+      };
+    }, CommunicationDataType.PONG_HOSTER);
   }
 
   /**
