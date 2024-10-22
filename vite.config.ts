@@ -1,9 +1,11 @@
 import * as path from 'path';
 import { defineConfig, PluginOption } from 'vite';
 import dts from 'vite-plugin-dts';
+import packageVersion from 'vite-plugin-package-version';
 import tsConfigPaths from 'vite-tsconfig-paths';
 
 const plugins: PluginOption[] = [
+  packageVersion(),
   tsConfigPaths(),
   dts({
     include: ['src'],

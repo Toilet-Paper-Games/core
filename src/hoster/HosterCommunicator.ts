@@ -69,7 +69,9 @@ export class HosterCommunicator<
 
     this.sendAppMessage({
       type: CommunicationDataType.INIT_GAME_HOSTER,
-      data: {},
+      data: {
+        coreVersion: import.meta.env.PACKAGE_VERSION,
+      },
     });
 
     // TODO: This should eventually be removed as it was added for backwards compatibility
