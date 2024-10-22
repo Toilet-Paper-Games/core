@@ -1,3 +1,6 @@
+import { PlayerModel } from '@/common/models/PlayerModel';
+import { MOBX_makeSimpleAutoObservable } from '@/common/utils/mobx';
+
 import { BaseCommunicator } from '../common/BaseCommunicator';
 import {
   CommunicationDataType,
@@ -7,6 +10,12 @@ import {
 } from '../common/CommunicationDataTransfers';
 import { PlayerStore } from './PlayerStore';
 
+export interface PlayerPingData {
+  player: PlayerModel;
+  ping: number;
+  lastPoll: number;
+}
+
 export class HosterCommunicator<
   TGameData extends GameDataDefinition = {
     ControllerToHoster: unknown;
@@ -15,7 +24,8 @@ export class HosterCommunicator<
 > extends BaseCommunicator<GameDataDefinition> {
   playerStore = new PlayerStore();
 
-  playerPingMap: Map<string, number> = new Map();
+  playerPingMap: Map<string, PlayerPingData> = new Map();
+  playerPingListeners: { listener: (playerPingData: PlayerPingData) => void }[] = [];
 
   readonly startTime = Date.now();
 
@@ -87,6 +97,8 @@ export class HosterCommunicator<
         this.ready();
       }, 1_000);
     }
+
+    MOBX_makeSimpleAutoObservable(this, {}, { autoBind: true });
   }
 
   /**
@@ -129,7 +141,19 @@ export class HosterCommunicator<
 
       for (const player of activePlayers) {
         this.fetchPing(player.connectionId).then((playerPing) => {
-          this.playerPingMap.set(player.connectionId, playerPing);
+          this.playerPingMap.set(player.connectionId, {
+            player,
+            ping: playerPing,
+            lastPoll: Date.now(),
+          });
+
+          this.playerPingListeners.forEach(({ listener }) => {
+            listener({
+              player,
+              ping: playerPing,
+              lastPoll: Date.now(),
+            });
+          });
         });
       }
     };
@@ -232,6 +256,21 @@ export class HosterCommunicator<
         if (index === -1) return;
 
         this.gameMessageListeners.splice(index, 1);
+      },
+    };
+  }
+
+  addPlayerPingListener(listener: (playerPingData: PlayerPingData) => void) {
+    this.playerPingListeners.push({ listener });
+
+    return {
+      destroy: () => {
+        const index = this.playerPingListeners.findIndex(
+          (listenerObj) => listenerObj.listener === listener,
+        );
+        if (index === -1) return;
+
+        this.playerPingListeners.splice(index, 1);
       },
     };
   }

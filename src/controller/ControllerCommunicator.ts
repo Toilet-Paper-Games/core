@@ -1,3 +1,5 @@
+import { MOBX_makeSimpleAutoObservable } from '@/common/utils/mobx';
+
 import { BaseCommunicator } from '../common/BaseCommunicator';
 import {
   CommunicationDataType,
@@ -31,6 +33,7 @@ export class ControllerCommunicator<
 
   /** Current ping (time from hoster to controller and controller to hoster combined) */
   pingData: PingData | null = null;
+  pingListeners: { listener: (pingData: PingData) => void }[] = [];
 
   addHosterReadyListener(listener: (ready: boolean) => void) {
     return this.addAppMessageListener(({ data }) => {
@@ -85,6 +88,8 @@ export class ControllerCommunicator<
         this.ready();
       }, 1_000);
     }
+
+    MOBX_makeSimpleAutoObservable(this, {}, { autoBind: true });
   }
 
   /**
@@ -108,12 +113,16 @@ export class ControllerCommunicator<
     }, CommunicationDataType.PING_HOSTER);
 
     this.addAppMessageListener(({ data }) => {
-      this.pingData = {
+      const pingData = {
         ping: data.pingMs,
         lastPoll: Date.now(),
         timeSinceStart: data.timeSinceStart,
         timeSinceStartPingAdjusted: data.timeSinceStart + data.pingMs / 2,
       };
+
+      this.pingData = pingData;
+
+      this.pingListeners.forEach((listenerObj) => listenerObj.listener(pingData));
     }, CommunicationDataType.PONG_HOSTER);
   }
 
@@ -180,6 +189,21 @@ export class ControllerCommunicator<
         if (index === -1) return;
 
         this.gameMessageListeners.splice(index, 1);
+      },
+    };
+  }
+
+  addPingListener(listener: (pingData: PingData) => void) {
+    this.pingListeners.push({ listener });
+
+    return {
+      destroy: () => {
+        const index = this.pingListeners.findIndex(
+          (listenerObj) => listenerObj.listener === listener,
+        );
+        if (index === -1) return;
+
+        this.pingListeners.splice(index, 1);
       },
     };
   }
