@@ -68,13 +68,17 @@ export interface AppDataTransfer_CONTROLLER extends CommunicationDataTransfersSt
 /** This message will be sent as soon as the communicator in constructed */
 export interface InitGameTransfer_HOSTER extends CommunicationDataTransfersStructure {
   type: CommunicationDataType.INIT_GAME_HOSTER;
-  data: {};
+  data: {
+    coreVersion: string;
+  };
 }
 
 /** This message will be sent as soon as the communicator in constructed */
 export interface InitGameTransfer_CONTROLLER extends CommunicationDataTransfersStructure {
   type: CommunicationDataType.INIT_GAME_CONTROLLER;
-  data: {};
+  data: {
+    coreVersion: string;
+  };
 }
 
 export interface ReadyStatusTransfer_HOSTER extends CommunicationDataTransfersStructure {

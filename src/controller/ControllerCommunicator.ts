@@ -61,7 +61,9 @@ export class ControllerCommunicator<
 
     this.sendAppMessage({
       type: CommunicationDataType.INIT_GAME_CONTROLLER,
-      data: {},
+      data: {
+        coreVersion: import.meta.env.PACKAGE_VERSION,
+      },
     });
 
     // TODO: This should eventually be removed as it was added for backwards compatibility
