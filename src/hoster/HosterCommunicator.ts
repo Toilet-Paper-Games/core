@@ -78,6 +78,8 @@ export class HosterCommunicator<
       },
     });
 
+    this.setupPingPong();
+
     // TODO: This should eventually be removed as it was added for backwards compatibility
     // with the old system.
     if (autoReady) {
@@ -132,7 +134,7 @@ export class HosterCommunicator<
       }
     };
 
-    setInterval(requestPings, 5_000);
+    setInterval(requestPings, 2_500);
   }
 
   async fetchPing(playerId: string) {
