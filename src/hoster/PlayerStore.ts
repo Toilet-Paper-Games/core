@@ -70,6 +70,7 @@ export class PlayerStore {
     );
   }
 
+  /** For internal usage only */
   smartUpdatePlayers(dtos: PlayerDto[]) {
     const newConnectionIds = new Set(dtos.map((dto) => dto.connectionId));
 

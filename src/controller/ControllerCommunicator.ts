@@ -28,16 +28,29 @@ export class ControllerCommunicator<
     }, CommunicationDataType.AppData_CONTROLLER);
   }
 
+  /** Promise indicating when communication between tp.games and the game have had first communication */
+  waitForLoad: Promise<void>;
+
+  /** If this value is true, tp.games and the game have communicated */
+  hasLoaded = false;
+
   /**
    * @param {boolean} autoReady - Indicates whether the controller should automatically become ready. (Wait 1 second before becoming ready)
    */
   constructor(autoReady = false) {
     super();
 
+    const { promise, resolve } = Promise.withResolvers<void>();
+
+    this.waitForLoad = promise;
+
     this.messageListener = (event) => this.messageHandler(event.data);
     window.addEventListener('message', this.messageListener);
 
     this.addAppMessageListener(({ data }) => {
+      resolve();
+      this.hasLoaded = true;
+
       this.hosterReady = data.hosterReady;
 
       this.devMode = data.devMode;
