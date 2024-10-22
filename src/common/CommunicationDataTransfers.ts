@@ -19,6 +19,10 @@ export enum CommunicationDataType {
   READY_STATUS_HOSTER,
   READY_STATUS_CONTROLLER,
 
+  PING_HOSTER,
+  PONG_CONTROLLER,
+  PONG_HOSTER,
+
   GAME_ACTION_HOSTER,
   GAME_ACTION_CONTROLLER,
   GAME_ACTION_RESPONSE_HOSTER,
@@ -96,6 +100,36 @@ export interface ReadyStatusTransfer_CONTROLLER
   };
 }
 
+export interface PingTransfer_HOSTER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.PING_HOSTER;
+  data: {
+    id: string;
+    playerId: string;
+    timeSinceStart: number;
+    hosterTime: number;
+  };
+}
+
+export interface PongTransfer_CONTROLLER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.PONG_CONTROLLER;
+  data: {
+    id: string;
+    playerId: string;
+    controllerTime: number;
+  };
+}
+
+export interface PongTransfer_HOSTER extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.PONG_HOSTER;
+  data: {
+    id: string;
+    playerId: string;
+    pingMs: number;
+    timeSinceStart: number;
+    hosterTime: number;
+  };
+}
+
 // Game messages
 
 export interface GameActionTransfer_HOSTER<T extends GameDataDefinition>
@@ -165,7 +199,10 @@ export type AppDataTransfer =
   | EndGame_HOSTER
   | EndGame_CONTROLLER
   | ReloadGame_HOSTER
-  | ReloadGame_CONTROLLER;
+  | ReloadGame_CONTROLLER
+  | PingTransfer_HOSTER
+  | PongTransfer_CONTROLLER
+  | PongTransfer_HOSTER;
 
 export type GameDataTransfer<T extends GameDataDefinition> =
   | GameActionTransfer_CONTROLLER<T>
