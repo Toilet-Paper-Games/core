@@ -227,7 +227,7 @@ export function isCommunicationDataTransfer<T extends GameDataDefinition>(
     typeof data === 'object' &&
     data !== null &&
     'type' in data &&
-    typeof data.type === 'number' &&
+    (typeof data.type === 'number' || typeof data.type === 'string') &&
     'data' in data &&
     typeof data.data !== 'undefined'
   );
