@@ -1,4 +1,4 @@
-import { MOBX_makeSimpleAutoObservable } from '@/common/utils/mobx';
+import { MOBX_makeSimpleAutoObservable } from '@/common/utils/mobx/index.skip-barrel';
 
 import { BaseCommunicator } from '../common/BaseCommunicator';
 import {

@@ -1,5 +1,7 @@
+import { runInAction } from 'mobx';
+
 import { PlayerModel } from '@/common/models/PlayerModel';
-import { MOBX_makeSimpleAutoObservable } from '@/common/utils/mobx';
+import { MOBX_makeSimpleAutoObservable } from '@/common/utils/mobx/index.skip-barrel';
 
 import { BaseCommunicator } from '../common/BaseCommunicator';
 import {
@@ -71,14 +73,16 @@ export class HosterCommunicator<
 
     this.addAppMessageListener(({ data }) => {
       resolve();
-      this.hasLoaded = true;
+      runInAction(() => {
+        this.hasLoaded = true;
 
-      this.playerStore.smartUpdatePlayers(data.players);
+        this.playerStore.smartUpdatePlayers(data.players);
 
-      this.devMode = data.devMode;
-      this.joinCode = data.joinCode;
+        this.devMode = data.devMode;
+        this.joinCode = data.joinCode;
 
-      this.connectionId = data.connectionId;
+        this.connectionId = data.connectionId;
+      });
     }, CommunicationDataType.AppData_HOSTER);
 
     this.sendAppMessage({
@@ -135,28 +139,20 @@ export class HosterCommunicator<
     });
   }
 
-  setupPingPong() {
+  private setupPingPong() {
     const requestPings = () => {
       const activePlayers = this.players.filter((player) => player.active);
 
       for (const player of activePlayers) {
-        this.fetchPing(player.connectionId).then((playerPing) => {
-          this.playerPingMap.set(player.connectionId, {
-            player,
-            ping: playerPing,
-            lastPoll: Date.now(),
-          });
-
-          this.playerPingListeners.forEach(({ listener }) => {
-            listener({
-              player,
-              ping: playerPing,
-              lastPoll: Date.now(),
-            });
-          });
-        });
+        this.fetchPing(player.connectionId);
       }
     };
+
+    this.playerStore.addPlayerReadyListener((player) => {
+      if (player.ready) {
+        this.fetchPing(player.connectionId);
+      }
+    });
 
     setInterval(requestPings, 2_500);
   }
@@ -200,6 +196,26 @@ export class HosterCommunicator<
         hosterTime: currentTimePong,
       },
     });
+
+    const player = this.playerMap.get(playerId);
+
+    if (player) {
+      runInAction(() => {
+        this.playerPingMap.set(playerId, {
+          player,
+          ping: pingMs,
+          lastPoll: currentTimePong,
+        });
+      });
+
+      this.playerPingListeners.forEach(({ listener }) => {
+        listener({
+          player,
+          ping: pingMs,
+          lastPoll: currentTimePong,
+        });
+      });
+    }
 
     return pingMs;
   }
