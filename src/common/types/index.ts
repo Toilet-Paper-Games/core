@@ -1,4 +1,4 @@
 export enum Subscription {
-  Free,
-  Day_Pass,
+  Free = 'Free',
+  Day_Pass = 'Day_Pass',
 }
