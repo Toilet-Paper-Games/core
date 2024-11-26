@@ -54,8 +54,10 @@ export interface AppDataTransfer_HOSTER extends CommunicationDataTransfersStruct
   data: {
     connectionId: string;
     players: PlayerDto[];
+    joinUrl: string;
     joinCode: string;
     devMode: boolean;
+    lobbyGame: boolean;
   };
 }
 
@@ -65,8 +67,10 @@ export interface AppDataTransfer_CONTROLLER extends CommunicationDataTransfersSt
   data: {
     hosterReady: boolean;
     connectionId: string;
+    joinUrl: string;
     joinCode: string;
     devMode: boolean;
+    lobbyGame: boolean;
   };
 }
 
