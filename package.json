@@ -36,7 +36,7 @@
     "generate-barrels": "barrelsby --delete -d ./src ./src/common/utils/math -e vite-env.d.ts -e \\.skip-barrel\\."
   },
   "dependencies": {
-    "firebase": "^10.12.4"
+    "firebase": "^11.0.2"
   },
   "peerDependencies": {
     "mobx": "^6.13.5"
