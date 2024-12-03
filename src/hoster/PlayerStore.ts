@@ -1,25 +1,27 @@
 import { makeAutoObservable, reaction } from 'mobx';
 
+import { GameDataDefinition } from '@/common/CommunicationDataTransfers';
 import { PlayerDto, PlayerModel } from '@/common/models/PlayerModel';
 
+import { HosterCommunicator } from './HosterCommunicator';
 import { SmartPlayerModel } from './SmartPlayerModel';
 
-export class PlayerStore {
-  playerMap: Map<string, SmartPlayerModel> = new Map();
+export class PlayerStore<TGameData extends GameDataDefinition> {
+  playerMap: Map<string, SmartPlayerModel<TGameData>> = new Map();
 
   get players() {
     return Array.from(this.playerMap.values());
   }
 
   // Arrays to store event listeners
-  private joinListeners: ((player: SmartPlayerModel) => void)[] = [];
-  private readyListeners: ((player: SmartPlayerModel) => void)[] = [];
-  private unreadyListeners: ((player: SmartPlayerModel) => void)[] = [];
-  private kickedListeners: ((player: SmartPlayerModel) => void)[] = [];
-  private activeListeners: ((player: SmartPlayerModel) => void)[] = [];
-  private inactiveListeners: ((player: SmartPlayerModel) => void)[] = [];
+  private joinListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
+  private readyListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
+  private unreadyListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
+  private kickedListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
+  private activeListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
+  private inactiveListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
 
-  constructor() {
+  constructor(private hosterCommunicator: HosterCommunicator<TGameData>) {
     makeAutoObservable(this, {}, { autoBind: true });
 
     // Reaction: Detect when a player is added (join) or removed (kick)
@@ -112,7 +114,7 @@ export class PlayerStore {
       } else {
         this.playerMap.set(
           dto.connectionId,
-          new SmartPlayerModel(this, PlayerModel.fromDto(dto)),
+          new SmartPlayerModel(this.hosterCommunicator, PlayerModel.fromDto(dto)),
         );
       }
     });
@@ -129,7 +131,7 @@ export class PlayerStore {
   /** Add listener for when a player joins
    * Ex. For when you want to display joined players in a list
    */
-  addPlayerJoinListener(callback: (player: SmartPlayerModel) => void) {
+  addPlayerJoinListener(callback: (player: SmartPlayerModel<TGameData>) => void) {
     this.joinListeners.push(callback);
     return {
       destroy: () => {
@@ -142,7 +144,7 @@ export class PlayerStore {
    * Ex. For when you want to start the game when all players are ready
    * Ex. For when you want to send an initial message to a player
    */
-  addPlayerReadyListener(callback: (player: SmartPlayerModel) => void) {
+  addPlayerReadyListener(callback: (player: SmartPlayerModel<TGameData>) => void) {
     this.readyListeners.push(callback);
     return {
       destroy: () => {
@@ -154,7 +156,7 @@ export class PlayerStore {
   /** Add listener for when a player is unready
    * Ex. For when you want to stop the game when a player is unready
    */
-  addPlayerUnreadyListener(callback: (player: SmartPlayerModel) => void) {
+  addPlayerUnreadyListener(callback: (player: SmartPlayerModel<TGameData>) => void) {
     this.unreadyListeners.push(callback);
     return {
       destroy: () => {
@@ -166,7 +168,7 @@ export class PlayerStore {
   /** Add listener for when a player is kicked
    * Ex. For when you want to delete player data when a player is kicked
    */
-  addPlayerKickedListener(callback: (player: SmartPlayerModel) => void) {
+  addPlayerKickedListener(callback: (player: SmartPlayerModel<TGameData>) => void) {
     this.kickedListeners.push(callback);
     return {
       destroy: () => {
@@ -178,7 +180,7 @@ export class PlayerStore {
   /** Add listener for when a player is active
    * Ex. For when you want to display if a player is actively connected
    */
-  addPlayerActiveListener(callback: (player: SmartPlayerModel) => void) {
+  addPlayerActiveListener(callback: (player: SmartPlayerModel<TGameData>) => void) {
     this.activeListeners.push(callback);
     return {
       destroy: () => {
@@ -190,7 +192,7 @@ export class PlayerStore {
   /** Add listener for when a player is inactive
    * Ex. For when you want to display if a player is actively connected
    */
-  addPlayerInactiveListener(callback: (player: SmartPlayerModel) => void) {
+  addPlayerInactiveListener(callback: (player: SmartPlayerModel<TGameData>) => void) {
     this.inactiveListeners.push(callback);
     return {
       destroy: () => {
@@ -200,27 +202,27 @@ export class PlayerStore {
   }
 
   // Trigger methods for each event type
-  private triggerJoin(player: SmartPlayerModel) {
+  private triggerJoin(player: SmartPlayerModel<TGameData>) {
     this.joinListeners.forEach((callback) => callback(player));
   }
 
-  private triggerKick(player: SmartPlayerModel) {
+  private triggerKick(player: SmartPlayerModel<TGameData>) {
     this.kickedListeners.forEach((callback) => callback(player));
   }
 
-  private triggerReady(player: SmartPlayerModel) {
+  private triggerReady(player: SmartPlayerModel<TGameData>) {
     this.readyListeners.forEach((callback) => callback(player));
   }
 
-  private triggerUnready(player: SmartPlayerModel) {
+  private triggerUnready(player: SmartPlayerModel<TGameData>) {
     this.unreadyListeners.forEach((callback) => callback(player));
   }
 
-  private triggerActive(player: SmartPlayerModel) {
+  private triggerActive(player: SmartPlayerModel<TGameData>) {
     this.activeListeners.forEach((callback) => callback(player));
   }
 
-  private triggerInactive(player: SmartPlayerModel) {
+  private triggerInactive(player: SmartPlayerModel<TGameData>) {
     this.inactiveListeners.forEach((callback) => callback(player));
   }
 }

@@ -1,11 +1,17 @@
-import { PlayerModel } from '../common/models/PlayerModel';
-import { PlayerStore } from './PlayerStore';
+import { GameDataDefinition } from '@/common/CommunicationDataTransfers';
 
-export class SmartPlayerModel {
+import { PlayerModel } from '../common/models/PlayerModel';
+import { HosterCommunicator } from './HosterCommunicator';
+
+export class SmartPlayerModel<TGameData extends GameDataDefinition> {
   constructor(
-    private playerStore: PlayerStore,
+    private hosterCommunicator: HosterCommunicator<TGameData>,
     private playerModel: PlayerModel,
   ) {}
+
+  private get playerStore() {
+    return this.hosterCommunicator.playerStore;
+  }
 
   get screenName() {
     return this.playerModel.screenName;
@@ -37,6 +43,10 @@ export class SmartPlayerModel {
 
   get dto() {
     return this.playerModel.dto;
+  }
+
+  sendMessage(data: TGameData['HosterToController']) {
+    return this.hosterCommunicator.sendGameMessage(data, this.connectionId);
   }
 
   async waitForReady(abortSignal?: AbortSignal): Promise<void> {
