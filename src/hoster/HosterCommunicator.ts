@@ -24,7 +24,7 @@ export class HosterCommunicator<
     HosterToController: unknown;
   },
 > extends BaseCommunicator<GameDataDefinition> {
-  playerStore = new PlayerStore();
+  playerStore = new PlayerStore(this);
 
   playerPingMap: Map<string, PlayerPingData> = new Map();
   playerPingListeners: { listener: (playerPingData: PlayerPingData) => void }[] = [];
