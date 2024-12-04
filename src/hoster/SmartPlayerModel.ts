@@ -33,6 +33,10 @@ export class SmartPlayerModel<TGameData extends GameDataDefinition> {
     return this.playerModel.active;
   }
 
+  get hasConnection() {
+    return this.playerModel.hasConnection;
+  }
+
   get isHost() {
     return this.playerModel.isHost;
   }
@@ -115,6 +119,28 @@ export class SmartPlayerModel<TGameData extends GameDataDefinition> {
    */
   addPlayerInactiveListener(callback: () => void) {
     return this.playerStore.addPlayerInactiveListener((player) => {
+      if (player.connectionId === this.connectionId) {
+        callback();
+      }
+    });
+  }
+
+  /** Add listener for when a player's connection is lost
+   * Ex. For when you want to display if a player has lost connection
+   */
+  addPlayerDisconnectedListener(callback: () => void) {
+    return this.playerStore.addPlayerDisconnectedListener((player) => {
+      if (player.connectionId === this.connectionId) {
+        callback();
+      }
+    });
+  }
+
+  /** Add listener for when a player's connection is restored
+   * Ex. For when you want to display if a player has restored connection
+   */
+  addPlayerConnectedListener(callback: () => void) {
+    return this.playerStore.addPlayerConnectedListener((player) => {
       if (player.connectionId === this.connectionId) {
         callback();
       }

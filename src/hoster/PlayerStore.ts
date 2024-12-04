@@ -20,6 +20,8 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
   private kickedListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
   private activeListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
   private inactiveListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
+  private connectedListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
+  private disconnectedListeners: ((player: SmartPlayerModel<TGameData>) => void)[] = [];
 
   constructor(private hosterCommunicator: HosterCommunicator<TGameData>) {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -53,6 +55,8 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
     reaction(
       () => Array.from(this.playerMap.values()).map((player) => player.ready), // Track "ready" state of all players
       (readyStates, prevReadyStates) => {
+        if (readyStates.length !== prevReadyStates.length) return;
+
         readyStates.forEach((isReady, index) => {
           if (isReady && !prevReadyStates[index]) {
             const player = Array.from(this.playerMap.values())[index];
@@ -66,6 +70,8 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
     reaction(
       () => Array.from(this.playerMap.values()).map((player) => !player.ready), // Track "ready" state of all players
       (unreadyStates, prevUnreadyStates) => {
+        if (unreadyStates.length !== prevUnreadyStates.length) return;
+
         unreadyStates.forEach((isUnready, index) => {
           if (isUnready && !prevUnreadyStates[index]) {
             const player = Array.from(this.playerMap.values())[index];
@@ -79,6 +85,8 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
     reaction(
       () => Array.from(this.playerMap.values()).map((player) => player.active), // Track "active" state of all players
       (activeStates, prevActiveStates) => {
+        if (activeStates.length !== prevActiveStates.length) return;
+
         activeStates.forEach((isActive, index) => {
           if (isActive && !prevActiveStates[index]) {
             const player = Array.from(this.playerMap.values())[index];
@@ -92,10 +100,42 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
     reaction(
       () => Array.from(this.playerMap.values()).map((player) => !player.active), // Track "active" state of all players
       (inactiveStates, prevInactiveStates) => {
+        if (inactiveStates.length !== prevInactiveStates.length) return;
+
         inactiveStates.forEach((isInactive, index) => {
           if (isInactive && !prevInactiveStates[index]) {
             const player = Array.from(this.playerMap.values())[index];
             this.triggerInactive(player); // Trigger inactive listener when a player becomes inactive
+          }
+        });
+      },
+    );
+
+    // Reaction: Detect when a player gains connection
+    reaction(
+      () => Array.from(this.playerMap.values()).map((player) => player.hasConnection), // Track "hasConnection" state of all players
+      (connectionStates, prevConnectionStates) => {
+        if (connectionStates.length !== prevConnectionStates.length) return;
+
+        connectionStates.forEach((hasConnection, index) => {
+          if (hasConnection && !prevConnectionStates[index]) {
+            const player = Array.from(this.playerMap.values())[index];
+            this.triggerConnected(player); // Trigger connected listener when a player gains connection
+          }
+        });
+      },
+    );
+
+    // Reaction: Detect when a player loses connection
+    reaction(
+      () => Array.from(this.playerMap.values()).map((player) => !player.hasConnection), // Track "hasConnection" state of all players
+      (disconnectionStates, prevDisconnectionStates) => {
+        if (disconnectionStates.length !== prevDisconnectionStates.length) return;
+
+        disconnectionStates.forEach((hasDisconnected, index) => {
+          if (hasDisconnected && !prevDisconnectionStates[index]) {
+            const player = Array.from(this.playerMap.values())[index];
+            this.triggerDisconnected(player); // Trigger disconnected listener when a player loses connection
           }
         });
       },
@@ -201,6 +241,32 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
     };
   }
 
+  /** Add listener for when a player is connected
+   * Ex. For when you want to display if a player has gained connection
+   */
+  addPlayerConnectedListener(callback: (player: SmartPlayerModel<TGameData>) => void) {
+    this.connectedListeners.push(callback);
+    return {
+      destroy: () => {
+        this.connectedListeners = this.connectedListeners.filter((cb) => cb !== callback);
+      },
+    };
+  }
+
+  /** Add listener for when a player's connection is lost
+   * Ex. For when you want to display if a player has lost connection
+   */
+  addPlayerDisconnectedListener(callback: (player: SmartPlayerModel<TGameData>) => void) {
+    this.disconnectedListeners.push(callback);
+    return {
+      destroy: () => {
+        this.disconnectedListeners = this.disconnectedListeners.filter(
+          (cb) => cb !== callback,
+        );
+      },
+    };
+  }
+
   // Trigger methods for each event type
   private triggerJoin(player: SmartPlayerModel<TGameData>) {
     this.joinListeners.forEach((callback) => callback(player));
@@ -224,5 +290,13 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
 
   private triggerInactive(player: SmartPlayerModel<TGameData>) {
     this.inactiveListeners.forEach((callback) => callback(player));
+  }
+
+  private triggerConnected(player: SmartPlayerModel<TGameData>) {
+    this.connectedListeners.forEach((callback) => callback(player));
+  }
+
+  private triggerDisconnected(player: SmartPlayerModel<TGameData>) {
+    this.disconnectedListeners.forEach((callback) => callback(player));
   }
 }
