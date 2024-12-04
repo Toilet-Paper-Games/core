@@ -18,6 +18,9 @@ export class PlayerModel {
   /** True is the user is actively playing and not disconnected */
   active = true;
 
+  /** True if the player has a connection */
+  hasConnection = true;
+
   isHost = false;
 
   subscription: Subscription = Subscription.Free;
@@ -27,6 +30,7 @@ export class PlayerModel {
     player.image = dto.image;
     player.ready = dto.ready;
     player.active = dto.active;
+    player.hasConnection = dto.hasConnection;
     player.isHost = dto.isHost;
     player.subscription = dto.subscription;
     return player;
@@ -55,7 +59,10 @@ export class PlayerModel {
       connectionId: this.connectionId,
       image: this.image,
       ready: this.ready,
+
       active: this.active,
+      hasConnection: this.hasConnection,
+
       isHost: this.isHost,
       subscription: this.subscription,
     };
@@ -67,7 +74,10 @@ export interface PlayerDto {
   connectionId: string;
   image: string | null;
   ready: boolean;
+
   active: boolean;
+  hasConnection: boolean;
+
   isHost: boolean;
   subscription: Subscription;
 }
