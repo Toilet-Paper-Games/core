@@ -148,12 +148,6 @@ export class HosterCommunicator<
       }
     };
 
-    this.playerStore.addPlayerReadyListener((player) => {
-      if (player.ready) {
-        this.fetchPing(player.connectionId);
-      }
-    });
-
     setInterval(requestPings, 2_500);
   }
 

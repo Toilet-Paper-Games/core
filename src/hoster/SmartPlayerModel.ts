@@ -1,3 +1,5 @@
+import { reaction } from 'mobx';
+
 import { GameDataDefinition } from '@/common/CommunicationDataTransfers';
 
 import { PlayerModel } from '../common/models/PlayerModel';
@@ -57,93 +59,39 @@ export class SmartPlayerModel<TGameData extends GameDataDefinition> {
     return this.playerModel.waitForReady(abortSignal);
   }
 
-  // Listener registration methods
-  /** Add listener for when a player joins
-   * Ex. For when you want to display joined players in a list
-   */
-  addPlayerJoinListener(callback: () => void) {
-    return this.playerStore.addPlayerJoinListener((player) => {
-      if (player.connectionId === this.connectionId) {
-        callback();
-      }
-    });
+  private addListenerHelper<T>(selector: () => T, listener: (value: T) => void) {
+    return reaction(selector, callIfDifferent(listener));
   }
 
-  /** Add listener for when a player is ready to receive messages
-   * Ex. For when you want to start the game when all players are ready
-   * Ex. For when you want to send an initial message to a player
-   */
-  addPlayerReadyListener(callback: () => void) {
-    return this.playerStore.addPlayerReadyListener((player) => {
-      if (player.connectionId === this.connectionId) {
-        callback();
-      }
-    });
+  addReadyListener(listener: (ready: boolean) => void) {
+    return this.addListenerHelper(() => this.ready, listener);
   }
 
-  /** Add listener for when a player is unready
-   * Ex. For when you want to stop the game when a player is unready
-   */
-  addPlayerUnreadyListener(callback: () => void) {
-    return this.playerStore.addPlayerUnreadyListener((player) => {
-      if (player.connectionId === this.connectionId) {
-        callback();
-      }
-    });
+  addActiveListener(listener: (active: boolean) => void) {
+    return this.addListenerHelper(() => this.active, listener);
   }
 
-  /** Add listener for when a player is kicked
-   * Ex. For when you want to delete player data when a player is kicked
-   */
-  addPlayerKickedListener(callback: () => void) {
-    return this.playerStore.addPlayerKickedListener((player) => {
-      if (player.connectionId === this.connectionId) {
-        callback();
-      }
-    });
+  addConnectionListener(listener: (hasConnection: boolean) => void) {
+    return this.addListenerHelper(() => this.hasConnection, listener);
   }
 
-  /** Add listener for when a player is active
-   * Ex. For when you want to display if a player is actively connected
-   */
-  addPlayerActiveListener(callback: () => void) {
-    return this.playerStore.addPlayerActiveListener((player) => {
-      if (player.connectionId === this.connectionId) {
-        callback();
-      }
-    });
+  addHostListener(listener: (isHost: boolean) => void) {
+    return this.addListenerHelper(() => this.isHost, listener);
   }
 
-  /** Add listener for when a player is inactive
-   * Ex. For when you want to display if a player is actively connected
-   */
-  addPlayerInactiveListener(callback: () => void) {
-    return this.playerStore.addPlayerInactiveListener((player) => {
-      if (player.connectionId === this.connectionId) {
-        callback();
-      }
-    });
+  addScreenNameListener(listener: (screenName: string | null) => void) {
+    return this.addListenerHelper(() => this.screenName, listener);
   }
 
-  /** Add listener for when a player's connection is lost
-   * Ex. For when you want to display if a player has lost connection
-   */
-  addPlayerDisconnectedListener(callback: () => void) {
-    return this.playerStore.addPlayerDisconnectedListener((player) => {
-      if (player.connectionId === this.connectionId) {
-        callback();
-      }
-    });
+  addImageListener(listener: (image: string | null) => void) {
+    return this.addListenerHelper(() => this.image, listener);
   }
+}
 
-  /** Add listener for when a player's connection is restored
-   * Ex. For when you want to display if a player has restored connection
-   */
-  addPlayerConnectedListener(callback: () => void) {
-    return this.playerStore.addPlayerConnectedListener((player) => {
-      if (player.connectionId === this.connectionId) {
-        callback();
-      }
-    });
-  }
+function callIfDifferent<T>(callback: (value: T) => void) {
+  return (value: T, prevValue: T) => {
+    if (value !== prevValue) {
+      callback(value);
+    }
+  };
 }
