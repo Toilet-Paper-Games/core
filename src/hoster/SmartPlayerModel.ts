@@ -1,4 +1,4 @@
-import { reaction } from 'mobx';
+import { makeAutoObservable, reaction } from 'mobx';
 
 import { GameDataDefinition } from '@/common/CommunicationDataTransfers';
 
@@ -9,10 +9,8 @@ export class SmartPlayerModel<TGameData extends GameDataDefinition> {
   constructor(
     private hosterCommunicator: HosterCommunicator<TGameData>,
     private playerModel: PlayerModel,
-  ) {}
-
-  private get playerStore() {
-    return this.hosterCommunicator.playerStore;
+  ) {
+    makeAutoObservable(this, {}, { autoBind: true });
   }
 
   get screenName() {
