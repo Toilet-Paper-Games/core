@@ -71,4 +71,92 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
   addPlayerKickedListener(callback: (player: SmartPlayerModel<TGameData>) => void) {
     return this.kickedEmitter.addListener(callback);
   }
+
+  addPlayerReadyListener(
+    callback: (player: SmartPlayerModel<TGameData>, ready: boolean) => void,
+  ) {
+    return this.addPlayerEventListener(
+      (player, cb) => player.addReadyListener(cb),
+      callback,
+    );
+  }
+
+  addPlayerActiveListener(
+    callback: (player: SmartPlayerModel<TGameData>, active: boolean) => void,
+  ) {
+    return this.addPlayerEventListener(
+      (player, cb) => player.addActiveListener(cb),
+      callback,
+    );
+  }
+
+  addPlayerHostListener(
+    callback: (player: SmartPlayerModel<TGameData>, isHost: boolean) => void,
+  ) {
+    return this.addPlayerEventListener(
+      (player, cb) => player.addHostListener(cb),
+      callback,
+    );
+  }
+
+  addPlayerConnectionListener(
+    callback: (player: SmartPlayerModel<TGameData>, hasConnection: boolean) => void,
+  ) {
+    return this.addPlayerEventListener(
+      (player, cb) => player.addConnectionListener(cb),
+      callback,
+    );
+  }
+
+  addPlayerImageListener(
+    callback: (player: SmartPlayerModel<TGameData>, image: string | null) => void,
+  ) {
+    return this.addPlayerEventListener(
+      (player, cb) => player.addImageListener(cb),
+      callback,
+    );
+  }
+
+  addPlayerScreenNameListener(
+    callback: (player: SmartPlayerModel<TGameData>, screenName: string | null) => void,
+  ) {
+    return this.addPlayerEventListener(
+      (player, cb) => player.addScreenNameListener(cb),
+      callback,
+    );
+  }
+
+  private addPlayerEventListener<T>(
+    playerListenerMethod: (
+      player: SmartPlayerModel<TGameData>,
+      callback: (value: T) => void,
+    ) => () => void,
+    callback: (player: SmartPlayerModel<TGameData>, value: T) => void,
+  ) {
+    const playerListenerMap = new Map<SmartPlayerModel<TGameData>, () => void>(); // Track destructors for each player
+
+    const joinDestructor = this.addPlayerJoinListener((player) => {
+      const destructor = playerListenerMethod(player, (value: T) =>
+        callback(player, value),
+      );
+      playerListenerMap.set(player, destructor);
+    });
+
+    const kickedDestructor = this.addPlayerKickedListener((player) => {
+      const destructor = playerListenerMap.get(player);
+      if (destructor) {
+        destructor();
+        playerListenerMap.delete(player);
+      }
+    });
+
+    return {
+      destroy: () => {
+        joinDestructor.destroy();
+        kickedDestructor.destroy();
+        playerListenerMap.forEach((destructor) => destructor());
+        playerListenerMap.clear();
+      },
+    };
+  }
 }
