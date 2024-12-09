@@ -7,10 +7,13 @@ import { PlayerDto, PlayerModel } from '@/common/models/PlayerModel';
 import { HosterCommunicator } from './HosterCommunicator';
 import { SmartPlayerModel } from './SmartPlayerModel';
 export class PlayerStore<TGameData extends GameDataDefinition> {
-  playerMap: Map<string, SmartPlayerModel<TGameData>> = new Map();
+  playerMap: Map<
+    string,
+    { smartPlayer: SmartPlayerModel<TGameData>; player: PlayerModel }
+  > = new Map();
 
   get players() {
-    return Array.from(this.playerMap.values());
+    return Array.from(this.playerMap.values()).map((player) => player.smartPlayer);
   }
 
   private joinEmitter = new EventEmitter<SmartPlayerModel<TGameData>>();
@@ -31,12 +34,12 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
 
         addedPlayers.forEach((id) => {
           const player = this.playerMap.get(id);
-          if (player) this.joinEmitter.emit(player);
+          if (player) this.joinEmitter.emit(player.smartPlayer);
         });
 
         removedPlayers.forEach((id) => {
           const player = this.playerMap.get(id);
-          if (player) this.kickedEmitter.emit(player);
+          if (player) this.kickedEmitter.emit(player.smartPlayer);
         });
       },
     );
@@ -48,12 +51,14 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
     dtos.forEach((dto) => {
       const existingPlayer = this.playerMap.get(dto.connectionId);
       if (existingPlayer) {
-        Object.assign(existingPlayer, dto);
+        Object.assign(existingPlayer.player, dto);
       } else {
-        this.playerMap.set(
-          dto.connectionId,
-          new SmartPlayerModel(this.hosterCommunicator, PlayerModel.fromDto(dto)),
-        );
+        const player = PlayerModel.fromDto(dto);
+
+        this.playerMap.set(dto.connectionId, {
+          smartPlayer: new SmartPlayerModel(this.hosterCommunicator, player),
+          player,
+        });
       }
     });
 
