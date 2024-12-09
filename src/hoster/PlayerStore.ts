@@ -51,7 +51,13 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
     dtos.forEach((dto) => {
       const existingPlayer = this.playerMap.get(dto.connectionId);
       if (existingPlayer) {
-        Object.assign(existingPlayer.player, dto);
+        existingPlayer.player.active = dto.active;
+        existingPlayer.player.image = dto.image;
+        existingPlayer.player.isHost = dto.isHost;
+        existingPlayer.player.ready = dto.ready;
+        existingPlayer.player.screenName = dto.screenName;
+        existingPlayer.player.subscription = dto.subscription;
+        existingPlayer.player.hasConnection = dto.hasConnection;
       } else {
         const player = PlayerModel.fromDto(dto);
 
