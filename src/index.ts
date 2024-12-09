@@ -13,3 +13,4 @@ export * from "./common/utils/temporal/time";
 export * from "./controller/ControllerCommunicator";
 export * from "./hoster/HosterCommunicator";
 export * from "./hoster/PlayerStore";
+export * from "./hoster/SmartPlayerModel";

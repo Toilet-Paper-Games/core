@@ -148,12 +148,6 @@ export class HosterCommunicator<
       }
     };
 
-    this.playerStore.addPlayerReadyListener((player) => {
-      if (player.ready) {
-        this.fetchPing(player.connectionId);
-      }
-    });
-
     setInterval(requestPings, 2_500);
   }
 
@@ -202,7 +196,7 @@ export class HosterCommunicator<
     if (player) {
       runInAction(() => {
         this.playerPingMap.set(playerId, {
-          player,
+          player: player,
           ping: pingMs,
           lastPoll: currentTimePong,
         });
@@ -210,7 +204,7 @@ export class HosterCommunicator<
 
       this.playerPingListeners.forEach(({ listener }) => {
         listener({
-          player,
+          player: player,
           ping: pingMs,
           lastPoll: currentTimePong,
         });
