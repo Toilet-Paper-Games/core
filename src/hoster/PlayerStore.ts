@@ -7,13 +7,12 @@ import { PlayerDto, PlayerModel } from '@/common/models/PlayerModel';
 import { HosterCommunicator } from './HosterCommunicator';
 import { SmartPlayerModel } from './SmartPlayerModel';
 export class PlayerStore<TGameData extends GameDataDefinition> {
-  playerMap: Map<
-    string,
-    { smartPlayer: SmartPlayerModel<TGameData>; player: PlayerModel }
-  > = new Map();
+  playerMap: Map<string, SmartPlayerModel<TGameData>> = new Map();
+
+  private internalPlayerMap = new Map<string, PlayerModel>();
 
   get players() {
-    return Array.from(this.playerMap.values()).map((player) => player.smartPlayer);
+    return Array.from(this.playerMap.values());
   }
 
   private joinEmitter = new EventEmitter<SmartPlayerModel<TGameData>>();
@@ -34,12 +33,12 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
 
         addedPlayers.forEach((id) => {
           const player = this.playerMap.get(id);
-          if (player) this.joinEmitter.emit(player.smartPlayer);
+          if (player) this.joinEmitter.emit(player);
         });
 
         removedPlayers.forEach((id) => {
           const player = this.playerMap.get(id);
-          if (player) this.kickedEmitter.emit(player.smartPlayer);
+          if (player) this.kickedEmitter.emit(player);
         });
       },
     );
@@ -49,28 +48,37 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
     const newConnectionIds = new Set(dtos.map((dto) => dto.connectionId));
 
     dtos.forEach((dto) => {
-      const existingPlayer = this.playerMap.get(dto.connectionId);
+      const existingPlayer = this.internalPlayerMap.get(dto.connectionId);
+
       if (existingPlayer) {
-        existingPlayer.player.active = dto.active;
-        existingPlayer.player.image = dto.image;
-        existingPlayer.player.isHost = dto.isHost;
-        existingPlayer.player.ready = dto.ready;
-        existingPlayer.player.screenName = dto.screenName;
-        existingPlayer.player.subscription = dto.subscription;
-        existingPlayer.player.hasConnection = dto.hasConnection;
+        existingPlayer.active = dto.active;
+        existingPlayer.image = dto.image;
+        existingPlayer.isHost = dto.isHost;
+        existingPlayer.ready = dto.ready;
+        existingPlayer.screenName = dto.screenName;
+        existingPlayer.subscription = dto.subscription;
+        existingPlayer.hasConnection = dto.hasConnection;
       } else {
         const player = PlayerModel.fromDto(dto);
 
-        this.playerMap.set(dto.connectionId, {
-          smartPlayer: new SmartPlayerModel(this.hosterCommunicator, player),
-          player,
-        });
+        this.internalPlayerMap.set(dto.connectionId, player);
+
+        this.playerMap.set(
+          dto.connectionId,
+          new SmartPlayerModel(this.hosterCommunicator, player),
+        );
       }
     });
 
     this.playerMap.forEach((_, connectionId) => {
       if (!newConnectionIds.has(connectionId)) {
         this.playerMap.delete(connectionId);
+      }
+    });
+
+    this.internalPlayerMap.forEach((_, connectionId) => {
+      if (!newConnectionIds.has(connectionId)) {
+        this.internalPlayerMap.delete(connectionId);
       }
     });
   }

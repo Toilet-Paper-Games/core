@@ -196,7 +196,7 @@ export class HosterCommunicator<
     if (player) {
       runInAction(() => {
         this.playerPingMap.set(playerId, {
-          player: player.smartPlayer,
+          player: player,
           ping: pingMs,
           lastPoll: currentTimePong,
         });
@@ -204,7 +204,7 @@ export class HosterCommunicator<
 
       this.playerPingListeners.forEach(({ listener }) => {
         listener({
-          player: player.smartPlayer,
+          player: player,
           ping: pingMs,
           lastPoll: currentTimePong,
         });
