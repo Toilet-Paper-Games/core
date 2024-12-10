@@ -35,9 +35,13 @@ export class HosterCommunicator<
   isReady = false;
 
   /** Don't write to this */
+  lobbyGame?: boolean;
+  /** Don't write to this */
   devMode?: boolean;
   /** Don't write to this */
   joinCode?: string;
+  /** Don't write to this */
+  joinUrl?: string;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
@@ -78,8 +82,11 @@ export class HosterCommunicator<
 
         this.playerStore.smartUpdatePlayers(data.players);
 
+        this.lobbyGame = data.lobbyGame;
+
         this.devMode = data.devMode;
         this.joinCode = data.joinCode;
+        this.joinUrl = data.joinUrl;
 
         this.connectionId = data.connectionId;
       });

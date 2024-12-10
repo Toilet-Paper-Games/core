@@ -27,9 +27,11 @@ export class ControllerCommunicator<
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
   /** Do not change this value directly, use ready and unready functions */
   isReady = false;
+  lobbyGame?: boolean;
   devMode?: boolean;
   hosterReady = false;
   joinCode?: string;
+  joinUrl?: string;
 
   /** Current ping (time from hoster to controller and controller to hoster combined) */
   pingData: PingData | null = null;
@@ -66,8 +68,10 @@ export class ControllerCommunicator<
 
       this.hosterReady = data.hosterReady;
 
+      this.lobbyGame = data.lobbyGame;
       this.devMode = data.devMode;
       this.joinCode = data.joinCode;
+      this.joinUrl = data.joinUrl;
 
       this.connectionId = data.connectionId;
     }, CommunicationDataType.AppData_CONTROLLER);
