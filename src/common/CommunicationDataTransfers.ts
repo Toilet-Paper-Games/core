@@ -1,12 +1,18 @@
 /* eslint-disable @typescript-eslint/ban-types */
 // TODO: need to be split between hoster and controller
 
+import { ControllerGlobalSettings } from '@/controller/ControllerDataPersistence';
+import { HosterGlobalSettings } from '@/hoster/HosterDataPersistence';
+
 import { PlayerDto } from './models/PlayerModel';
 
 export interface GameDataDefinition<C2H = unknown, H2C = unknown> {
   ControllerToHoster: C2H;
   HosterToController: H2C;
 }
+
+// G2P = Game to Platform
+// P2G = Platform to Game
 
 export enum CommunicationDataType {
   DEBUG = 'DEBUG',
@@ -33,6 +39,18 @@ export enum CommunicationDataType {
   END_GAME_CONTROLLER = 'END_GAME_CONTROLLER',
   RELOAD_GAME_HOSTER = 'RELOAD_GAME_HOSTER',
   RELOAD_GAME_CONTROLLER = 'RELOAD_GAME_CONTROLLER',
+
+  SET_GLOBAL_SETTING_HOSTER_G2P = 'SET_GLOBAL_SETTING_HOSTER_G2P',
+  SET_GLOBAL_SETTING_CONTROLLER_G2P = 'SET_GLOBAL_SETTING_CONTROLLER_G2P',
+
+  SET_GAME_STORAGE_HOSTER_G2P = 'SET_GAME_STORAGE_HOSTER_G2P',
+  SET_GAME_STORAGE_CONTROLLER_G2P = 'SET_GAME_STORAGE_CONTROLLER_G2P',
+
+  UPDATED_GLOBAL_SETTING_HOSTER_P2G = 'UPDATED_GLOBAL_SETTING_HOSTER_P2G',
+  UPDATED_GLOBAL_SETTING_CONTROLLER_P2G = 'UPDATED_GLOBAL_SETTING_CONTROLLER_P2G',
+
+  UPDATED_GAME_STORAGE_HOSTER_P2G = 'UPDATED_GAME_STORAGE_HOSTER_P2G',
+  UPDATED_GAME_STORAGE_CONTROLLER_P2G = 'UPDATED_GAME_STORAGE_CONTROLLER_P2G',
 }
 
 export interface CommunicationDataTransfersStructure {
@@ -58,6 +76,8 @@ export interface AppDataTransfer_HOSTER extends CommunicationDataTransfersStruct
     joinCode: string;
     devMode: boolean;
     lobbyGame: boolean;
+    globalSettings: HosterGlobalSettings;
+    gameStorage: Record<string, string | undefined>;
   };
 }
 
@@ -71,6 +91,8 @@ export interface AppDataTransfer_CONTROLLER extends CommunicationDataTransfersSt
     joinCode: string;
     devMode: boolean;
     lobbyGame: boolean;
+    globalSettings: ControllerGlobalSettings;
+    gameStorage: Record<string, string | undefined>;
   };
 }
 
@@ -191,6 +213,82 @@ export interface ReloadGame_CONTROLLER extends CommunicationDataTransfersStructu
   data: {};
 }
 
+export type SetGlobalSettingTransfer_HOSTER = {
+  [K in keyof HosterGlobalSettings]: {
+    type: CommunicationDataType.SET_GLOBAL_SETTING_HOSTER_G2P;
+    data: {
+      key: K;
+      value: HosterGlobalSettings[K];
+    };
+  };
+}[keyof HosterGlobalSettings];
+
+export type SetGlobalSettingTransfer_CONTROLLER = {
+  [K in keyof ControllerGlobalSettings]: {
+    type: CommunicationDataType.SET_GLOBAL_SETTING_CONTROLLER_G2P;
+    data: {
+      key: K;
+      value: ControllerGlobalSettings[K];
+    };
+  };
+}[keyof ControllerGlobalSettings];
+
+export interface SetGameSettingTransfer_HOSTER
+  extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.SET_GAME_STORAGE_HOSTER_G2P;
+  data: {
+    key: string;
+    value: unknown;
+  };
+}
+
+export interface SetGameSettingTransfer_CONTROLLER
+  extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.SET_GAME_STORAGE_CONTROLLER_G2P;
+  data: {
+    key: string;
+    value: unknown;
+  };
+}
+
+export type UpdatedGlobalSettingTransfer_HOSTER = {
+  [K in keyof HosterGlobalSettings]: {
+    type: CommunicationDataType.UPDATED_GLOBAL_SETTING_HOSTER_P2G;
+    data: {
+      key: K;
+      value: HosterGlobalSettings[K];
+    };
+  };
+}[keyof HosterGlobalSettings];
+
+export type UpdatedGlobalSettingTransfer_CONTROLLER = {
+  [K in keyof ControllerGlobalSettings]: {
+    type: CommunicationDataType.UPDATED_GLOBAL_SETTING_CONTROLLER_P2G;
+    data: {
+      key: K;
+      value: ControllerGlobalSettings[K];
+    };
+  };
+}[keyof ControllerGlobalSettings];
+
+export interface UpdatedGameSettingTransfer_HOSTER
+  extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.UPDATED_GAME_STORAGE_HOSTER_P2G;
+  data: {
+    key: string;
+    value: unknown;
+  };
+}
+
+export interface UpdatedGameSettingTransfer_CONTROLLER
+  extends CommunicationDataTransfersStructure {
+  type: CommunicationDataType.UPDATED_GAME_STORAGE_CONTROLLER_P2G;
+  data: {
+    key: string;
+    value: unknown;
+  };
+}
+
 // Transfer listings
 
 export type AppDataTransfer =
@@ -207,7 +305,15 @@ export type AppDataTransfer =
   | ReloadGame_CONTROLLER
   | PingTransfer_HOSTER
   | PongTransfer_CONTROLLER
-  | PongTransfer_HOSTER;
+  | PongTransfer_HOSTER
+  | SetGlobalSettingTransfer_HOSTER
+  | SetGlobalSettingTransfer_CONTROLLER
+  | SetGameSettingTransfer_HOSTER
+  | SetGameSettingTransfer_CONTROLLER
+  | UpdatedGlobalSettingTransfer_HOSTER
+  | UpdatedGlobalSettingTransfer_CONTROLLER
+  | UpdatedGameSettingTransfer_HOSTER
+  | UpdatedGameSettingTransfer_CONTROLLER;
 
 export type GameDataTransfer<T extends GameDataDefinition> =
   | GameActionTransfer_CONTROLLER<T>

@@ -1,4 +1,7 @@
-import { MOBX_makeSimpleAutoObservable } from '@/common/utils/mobx/index.skip-barrel';
+import {
+  MOBX_makeSimpleAutoObservable,
+  smartUpdate,
+} from '@/common/utils/mobx/index.skip-barrel';
 
 import { BaseCommunicator } from '../common/BaseCommunicator';
 import {
@@ -8,6 +11,7 @@ import {
   GameDataDefinition,
   GameDataTransfer,
 } from '../common/CommunicationDataTransfers';
+import { ControllerDataPersistence } from './ControllerDataPersistence';
 
 export interface PingData {
   ping: number;
@@ -22,6 +26,8 @@ export class ControllerCommunicator<
     HosterToController: unknown;
   },
 > extends BaseCommunicator<TGameData> {
+  dataPersistence = new ControllerDataPersistence(this);
+
   /** This should not be used unless you know what you are doing */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messageListener: (this: Window, ev: MessageEvent<any>) => any;
@@ -74,6 +80,18 @@ export class ControllerCommunicator<
       this.joinUrl = data.joinUrl;
 
       this.connectionId = data.connectionId;
+
+      if (!this.dataPersistence.globalSettings || !data.globalSettings) {
+        this.dataPersistence.globalSettings = data.globalSettings;
+      } else {
+        smartUpdate(this.dataPersistence.globalSettings, data.globalSettings);
+      }
+
+      if (!this.dataPersistence.gameStorage || !data.gameStorage) {
+        this.dataPersistence.gameStorage = data.gameStorage;
+      } else {
+        smartUpdate(this.dataPersistence.gameStorage, data.gameStorage);
+      }
     }, CommunicationDataType.AppData_CONTROLLER);
 
     this.sendAppMessage({

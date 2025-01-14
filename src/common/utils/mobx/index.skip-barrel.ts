@@ -1,8 +1,11 @@
 import {
   $mobx,
+  action,
   AnnotationsMap,
   CreateObservableOptions,
   isObservable,
+  isObservableArray,
+  isObservableObject,
   makeObservable,
 } from 'mobx';
 
@@ -71,3 +74,37 @@ export function MOBX_makeSimpleAutoObservable<
 
   return makeObservable(target, annotations, options);
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyObject = Record<string, any>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isObject(obj: any): obj is AnyObject {
+  return obj && typeof obj === 'object' && !Array.isArray(obj);
+}
+
+export const smartUpdate = action(<T extends AnyObject>(current: T, dto: T): T => {
+  for (const key of Object.keys(dto)) {
+    const currentValue = current[key as keyof T];
+    const newValue = dto[key as keyof T];
+
+    if (isObject(currentValue) && isObject(newValue)) {
+      if (isObservableObject(currentValue)) {
+        // Recursively update observable nested objects
+        smartUpdate(currentValue, newValue);
+      } else {
+        // Replace non-observable objects entirely
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (current as any)[key] = newValue;
+      }
+    } else if (isObservableArray(currentValue) && Array.isArray(newValue)) {
+      // Handle observable arrays
+      currentValue.replace(newValue); // MobX-specific method to replace array contents
+    } else if (currentValue !== newValue) {
+      // Update primitive values or references if changed
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (current as any)[key] = newValue;
+    }
+  }
+  return current;
+});
