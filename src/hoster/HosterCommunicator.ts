@@ -1,7 +1,10 @@
 import { runInAction } from 'mobx';
 
 import { PlayerModel } from '@/common/models/PlayerModel';
-import { MOBX_makeSimpleAutoObservable } from '@/common/utils/mobx/index.skip-barrel';
+import {
+  MOBX_makeSimpleAutoObservable,
+  smartUpdate,
+} from '@/common/utils/mobx/index.skip-barrel';
 
 import { BaseCommunicator } from '../common/BaseCommunicator';
 import {
@@ -10,6 +13,7 @@ import {
   GameDataDefinition,
   GameDataTransfer,
 } from '../common/CommunicationDataTransfers';
+import { HosterDataPersistence } from './HosterDataPersistence';
 import { PlayerStore } from './PlayerStore';
 
 export interface PlayerPingData {
@@ -25,6 +29,8 @@ export class HosterCommunicator<
   },
 > extends BaseCommunicator<GameDataDefinition> {
   playerStore = new PlayerStore(this);
+
+  dataPersistence = new HosterDataPersistence(this);
 
   playerPingMap: Map<string, PlayerPingData> = new Map();
   playerPingListeners: { listener: (playerPingData: PlayerPingData) => void }[] = [];
@@ -89,6 +95,18 @@ export class HosterCommunicator<
         this.joinUrl = data.joinUrl;
 
         this.connectionId = data.connectionId;
+
+        if (!this.dataPersistence.globalSettings || !data.globalSettings) {
+          this.dataPersistence.globalSettings = data.globalSettings;
+        } else {
+          smartUpdate(this.dataPersistence.globalSettings, data.globalSettings);
+        }
+
+        if (!this.dataPersistence.gameStorage || !data.gameStorage) {
+          this.dataPersistence.gameStorage = data.gameStorage;
+        } else {
+          smartUpdate(this.dataPersistence.gameStorage, data.gameStorage);
+        }
       });
     }, CommunicationDataType.AppData_HOSTER);
 
