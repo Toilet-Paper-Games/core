@@ -238,7 +238,7 @@ export interface SetGameSettingTransfer_HOSTER
   type: CommunicationDataType.SET_GAME_STORAGE_HOSTER_G2P;
   data: {
     key: string;
-    value: unknown;
+    value: string | undefined;
   };
 }
 
@@ -247,7 +247,7 @@ export interface SetGameSettingTransfer_CONTROLLER
   type: CommunicationDataType.SET_GAME_STORAGE_CONTROLLER_G2P;
   data: {
     key: string;
-    value: unknown;
+    value: string | undefined;
   };
 }
 
@@ -276,7 +276,7 @@ export interface UpdatedGameSettingTransfer_HOSTER
   type: CommunicationDataType.UPDATED_GAME_STORAGE_HOSTER_P2G;
   data: {
     key: string;
-    value: unknown;
+    value: string | undefined;
   };
 }
 
@@ -285,7 +285,7 @@ export interface UpdatedGameSettingTransfer_CONTROLLER
   type: CommunicationDataType.UPDATED_GAME_STORAGE_CONTROLLER_P2G;
   data: {
     key: string;
-    value: unknown;
+    value: string | undefined;
   };
 }
 
