@@ -76,7 +76,7 @@ export interface AppDataTransfer_HOSTER extends CommunicationDataTransfersStruct
     joinCode: string;
     devMode: boolean;
     lobbyGame: boolean;
-    globalSettings: HosterGlobalSettings;
+    globalSettings: HosterGlobalSettings | null;
     gameStorage: Record<string, string | undefined> | null;
   };
 }
@@ -91,7 +91,7 @@ export interface AppDataTransfer_CONTROLLER extends CommunicationDataTransfersSt
     joinCode: string;
     devMode: boolean;
     lobbyGame: boolean;
-    globalSettings: ControllerGlobalSettings;
+    globalSettings: ControllerGlobalSettings | null;
     gameStorage: Record<string, string | undefined> | null;
   };
 }
