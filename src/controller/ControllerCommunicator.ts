@@ -1,3 +1,4 @@
+import { PlayerDto } from '@/common/models/PlayerModel';
 import {
   MOBX_makeSimpleAutoObservable,
   smartUpdate,
@@ -26,6 +27,7 @@ export class ControllerCommunicator<
     HosterToController: unknown;
   },
 > extends BaseCommunicator<TGameData> {
+  player: PlayerDto | null = null;
   dataPersistence = new ControllerDataPersistence(this);
 
   /** This should not be used unless you know what you are doing */
@@ -91,6 +93,12 @@ export class ControllerCommunicator<
         this.dataPersistence.gameStorage = data.gameStorage;
       } else {
         smartUpdate(this.dataPersistence.gameStorage, data.gameStorage);
+      }
+
+      if (!this.player || !data.player) {
+        this.player = data.player;
+      } else {
+        smartUpdate(this.player, data.player);
       }
     }, CommunicationDataType.AppData_CONTROLLER);
 
