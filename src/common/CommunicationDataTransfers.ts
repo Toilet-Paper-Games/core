@@ -87,6 +87,7 @@ export interface AppDataTransfer_CONTROLLER extends CommunicationDataTransfersSt
   data: {
     hosterReady: boolean;
     connectionId: string;
+    player: PlayerDto;
     joinUrl: string;
     joinCode: string;
     devMode: boolean;
