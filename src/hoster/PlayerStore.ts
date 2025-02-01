@@ -9,8 +9,6 @@ import { SmartPlayerModel } from './SmartPlayerModel';
 export class PlayerStore<TGameData extends GameDataDefinition> {
   playerMap: Map<string, SmartPlayerModel<TGameData>> = new Map();
 
-  private internalPlayerMap = new Map<string, PlayerModel>();
-
   get players() {
     return Array.from(this.playerMap.values());
   }
@@ -48,20 +46,20 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
     const newConnectionIds = new Set(dtos.map((dto) => dto.connectionId));
 
     dtos.forEach((dto) => {
-      const existingPlayer = this.internalPlayerMap.get(dto.connectionId);
+      const existingPlayer = this.playerMap.get(dto.connectionId);
 
       if (existingPlayer) {
-        existingPlayer.active = dto.active;
-        existingPlayer.image = dto.image;
-        existingPlayer.isHost = dto.isHost;
-        existingPlayer.ready = dto.ready;
-        existingPlayer.screenName = dto.screenName;
-        existingPlayer.subscription = dto.subscription;
-        existingPlayer.hasConnection = dto.hasConnection;
+        const player = existingPlayer['playerModel'];
+
+        player.active = dto.active;
+        player.image = dto.image;
+        player.isHost = dto.isHost;
+        player.ready = dto.ready;
+        player.screenName = dto.screenName;
+        player.subscription = dto.subscription;
+        player.hasConnection = dto.hasConnection;
       } else {
         const player = PlayerModel.fromDto(dto);
-
-        this.internalPlayerMap.set(dto.connectionId, player);
 
         this.playerMap.set(
           dto.connectionId,
@@ -73,12 +71,6 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
     this.playerMap.forEach((_, connectionId) => {
       if (!newConnectionIds.has(connectionId)) {
         this.playerMap.delete(connectionId);
-      }
-    });
-
-    this.internalPlayerMap.forEach((_, connectionId) => {
-      if (!newConnectionIds.has(connectionId)) {
-        this.internalPlayerMap.delete(connectionId);
       }
     });
   }
@@ -154,6 +146,13 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
   ) {
     const playerListenerMap = new Map<SmartPlayerModel<TGameData>, () => void>(); // Track destructors for each player
 
+    for (const player of this.players) {
+      const destructor = playerListenerMethod(player, (value: T) =>
+        callback(player, value),
+      );
+      playerListenerMap.set(player, destructor);
+    }
+
     const joinDestructor = this.addPlayerJoinListener((player) => {
       const destructor = playerListenerMethod(player, (value: T) =>
         callback(player, value),
@@ -174,7 +173,6 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
         joinDestructor.destroy();
         kickedDestructor.destroy();
         playerListenerMap.forEach((destructor) => destructor());
-        playerListenerMap.clear();
       },
     };
   }
