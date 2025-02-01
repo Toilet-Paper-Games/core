@@ -11,6 +11,8 @@ export * from "./common/utils/math/utils";
 export * from "./common/utils/math/vector";
 export * from "./common/utils/temporal/time";
 export * from "./controller/ControllerCommunicator";
+export * from "./controller/ControllerDataPersistence";
 export * from "./hoster/HosterCommunicator";
+export * from "./hoster/HosterDataPersistence";
 export * from "./hoster/PlayerStore";
 export * from "./hoster/SmartPlayerModel";

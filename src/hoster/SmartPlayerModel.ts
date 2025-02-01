@@ -57,8 +57,18 @@ export class SmartPlayerModel<TGameData extends GameDataDefinition> {
     return this.playerModel.waitForReady(abortSignal);
   }
 
+  destructors: (() => void)[] = [];
+
   private addListenerHelper<T>(selector: () => T, listener: (value: T) => void) {
-    return reaction(selector, callIfDifferent(listener));
+    const destructor = reaction(selector, callIfDifferent(listener));
+
+    this.destructors.push(destructor);
+
+    return destructor;
+  }
+
+  destroy() {
+    this.destructors.forEach((destructor) => destructor());
   }
 
   addReadyListener(listener: (ready: boolean) => void) {
