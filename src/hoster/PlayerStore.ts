@@ -8,6 +8,7 @@ import { HosterCommunicator } from './HosterCommunicator';
 import { SmartPlayerModel } from './SmartPlayerModel';
 export class PlayerStore<TGameData extends GameDataDefinition> {
   playerMap: Map<string, SmartPlayerModel<TGameData>> = new Map();
+  playerToKick: Map<string, SmartPlayerModel<TGameData>> = new Map();
 
   get players() {
     return Array.from(this.playerMap.values());
@@ -35,8 +36,11 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
         });
 
         removedPlayers.forEach((id) => {
-          const player = this.playerMap.get(id);
-          if (player) this.kickedEmitter.emit(player);
+          const player = this.playerToKick.get(id);
+          if (player) {
+            this.kickedEmitter.emit(player);
+            this.playerToKick.delete(id);
+          }
         });
       },
     );
@@ -70,7 +74,10 @@ export class PlayerStore<TGameData extends GameDataDefinition> {
 
     this.playerMap.forEach((_, connectionId) => {
       if (!newConnectionIds.has(connectionId)) {
+        const player = this.playerMap.get(connectionId);
+        if (!player) return;
         this.playerMap.delete(connectionId);
+        this.playerToKick.set(connectionId, player);
       }
     });
   }
