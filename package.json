@@ -39,7 +39,7 @@
     "firebase": "^11.0.2"
   },
   "peerDependencies": {
-    "mobx": "^6.13.5"
+    "mobx": "^6.13.6"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
@@ -62,7 +62,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-storybook": "^0.11.2",
     "jsdom": "^26.0.0",
-    "mobx": "^6.13.5",
+    "mobx": "^6.13.6",
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
