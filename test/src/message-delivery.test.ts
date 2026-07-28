@@ -33,10 +33,27 @@ function createPlayerDto(
 
 describe('game message delivery confirmation', () => {
   const postMessage = vi.fn();
+  let installedPromiseWithResolvers = false;
 
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(10_000);
+    if (!Promise.withResolvers) {
+      Object.defineProperty(Promise, 'withResolvers', {
+        configurable: true,
+        value: <T>() => {
+          let resolve!: (value: T | PromiseLike<T>) => void;
+          let reject!: (reason?: unknown) => void;
+          const promise = new Promise<T>((promiseResolve, promiseReject) => {
+            resolve = promiseResolve;
+            reject = promiseReject;
+          });
+
+          return { promise, resolve, reject };
+        },
+      });
+      installedPromiseWithResolvers = true;
+    }
     vi.stubGlobal('window', {
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
@@ -46,6 +63,10 @@ describe('game message delivery confirmation', () => {
   });
 
   afterEach(() => {
+    if (installedPromiseWithResolvers) {
+      Reflect.deleteProperty(Promise, 'withResolvers');
+      installedPromiseWithResolvers = false;
+    }
     vi.useRealTimers();
     vi.unstubAllGlobals();
   });
