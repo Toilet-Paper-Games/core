@@ -19,6 +19,10 @@ export interface PingData {
   lastPoll: number;
   timeSinceStart: number;
   timeSinceStartPingAdjusted: number;
+  /** Hoster clock timestamp when the latest pong was sent. */
+  hosterTime: number;
+  /** Estimated hoster timestamp when the latest pong reached this controller. */
+  hosterTimePingAdjusted: number;
 }
 
 export class ControllerCommunicator<
@@ -44,6 +48,27 @@ export class ControllerCommunicator<
   /** Current ping (time from hoster to controller and controller to hoster combined) */
   pingData: PingData | null = null;
   pingListeners: { listener: (pingData: PingData) => void }[] = [];
+
+  /**
+   * Estimated current hoster timestamp in milliseconds.
+   *
+   * The latest host timestamp is adjusted by half the measured round-trip time
+   * and advanced using elapsed controller time between ping samples. Call this
+   * method on demand; it does not schedule timer updates.
+   *
+   * @returns The estimated hoster clock, or `null` before the first completed
+   * ping exchange.
+   */
+  getHosterTime(): number | null {
+    if (!this.pingData) {
+      return null;
+    }
+
+    return (
+      this.pingData.hosterTimePingAdjusted +
+      (Date.now() - this.pingData.lastPoll)
+    );
+  }
 
   addHosterReadyListener(listener: (ready: boolean) => void) {
     return this.addAppMessageListener(({ data }) => {
@@ -143,11 +168,15 @@ export class ControllerCommunicator<
     }, CommunicationDataType.PING_HOSTER);
 
     this.addAppMessageListener(({ data }) => {
+      const lastPoll = Date.now();
+      const oneWayDelay = data.pingMs / 2;
       const pingData = {
         ping: data.pingMs,
-        lastPoll: Date.now(),
+        lastPoll,
         timeSinceStart: data.timeSinceStart,
-        timeSinceStartPingAdjusted: data.timeSinceStart + data.pingMs / 2,
+        timeSinceStartPingAdjusted: data.timeSinceStart + oneWayDelay,
+        hosterTime: data.hosterTime,
+        hosterTimePingAdjusted: data.hosterTime + oneWayDelay,
       };
 
       this.pingData = pingData;
