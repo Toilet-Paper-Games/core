@@ -12,6 +12,9 @@ import {
   GameActionResponseTransfer_HOSTER,
   GameDataDefinition,
   GameDataTransfer,
+  GameMessageDeliveryOptions,
+  GameMessageDeliveryReceipt,
+  isCommunicationDataTransfer,
 } from '../common/CommunicationDataTransfers';
 import { HosterDataPersistence } from './HosterDataPersistence';
 import { PlayerStore } from './PlayerStore';
@@ -136,6 +139,7 @@ export class HosterCommunicator<
    */
   destructor() {
     window.removeEventListener('message', this.messageListener);
+    this.rejectPendingGameMessageDeliveries();
   }
 
   /**
@@ -244,7 +248,53 @@ export class HosterCommunicator<
    * @param data The game data to send.
    * @param userId The ID of the user to send the message to.
    */
-  sendGameMessage(data: TGameData['HosterToController'], userId: string) {
+  sendGameMessage(data: TGameData['HosterToController'], userId: string): void;
+  sendGameMessage(
+    data: TGameData['HosterToController'],
+    userId: string,
+    options: GameMessageDeliveryOptions,
+  ): Promise<GameMessageDeliveryReceipt>;
+  sendGameMessage(
+    data: TGameData['HosterToController'],
+    userId: string,
+    options?: GameMessageDeliveryOptions,
+  ): void | Promise<GameMessageDeliveryReceipt> {
+    if (options) {
+      const player = this.playerMap.get(userId);
+      if (!player?.hasConnection) {
+        return this.createUnavailableGameMessageDelivery(userId);
+      }
+
+      const { envelope, delivery } = this.createConfirmedGameMessage(
+        data,
+        userId,
+        options,
+      );
+      const { messageId } = envelope.__tpgCoreDelivery;
+      const connectionDisposer = player.addConnectionListener((hasConnection) => {
+        if (!hasConnection) {
+          this.rejectGameMessageDelivery(messageId, 'recipient-unavailable');
+        }
+      });
+      const kickedListener = this.playerStore.addPlayerKickedListener((kickedPlayer) => {
+        if (kickedPlayer.connectionId === userId) {
+          this.rejectGameMessageDelivery(messageId, 'recipient-unavailable');
+        }
+      });
+      this.addGameMessageDeliveryCleanup(messageId, () => {
+        connectionDisposer();
+        kickedListener.destroy();
+      });
+      this.sendMessage({
+        type: CommunicationDataType.GAME_ACTION_HOSTER,
+        data: {
+          to: userId,
+          payload: envelope,
+        },
+      });
+      return delivery;
+    }
+
     this.sendMessage({
       type: CommunicationDataType.GAME_ACTION_HOSTER,
       data: {
@@ -259,7 +309,23 @@ export class HosterCommunicator<
    *
    * @param data The game message data to be sent.
    */
-  broadcastGameMessage(data: TGameData['HosterToController']) {
+  broadcastGameMessage(data: TGameData['HosterToController']): void;
+  broadcastGameMessage(
+    data: TGameData['HosterToController'],
+    options: GameMessageDeliveryOptions,
+  ): Promise<GameMessageDeliveryReceipt[]>;
+  broadcastGameMessage(
+    data: TGameData['HosterToController'],
+    options?: GameMessageDeliveryOptions,
+  ): void | Promise<GameMessageDeliveryReceipt[]> {
+    if (options) {
+      return Promise.all(
+        this.players
+          .filter((player) => player.hasConnection)
+          .map((player) => this.sendGameMessage(data, player.connectionId, options)),
+      );
+    }
+
     // TODO: create a dedicated method for broadcasting messages
     // such that less messages are sent across the iframe
     for (const player of this.players) {
@@ -320,10 +386,44 @@ export class HosterCommunicator<
 
   /** This should not be used unless you know what you are doing */
   messageHandler(message: unknown) {
-    super.messageHandler(message);
+    if (!isCommunicationDataTransfer<TGameData>(message)) {
+      throw new Error('Invalid data transfer');
+    }
 
+    if (
+      message.type === CommunicationDataType.GAME_ACTION_RESPONSE_HOSTER &&
+      this.handleGameMessageAcknowledgement(message.data.payload, message.data.from)
+    ) {
+      return;
+    }
+
+    let normalizedMessage = message;
     if (message.type === CommunicationDataType.GAME_ACTION_RESPONSE_HOSTER) {
-      this.gameMessageListeners.forEach((callbackfn) => callbackfn.listener(message));
+      const incoming = this.unwrapConfirmedGameMessage(message.data.payload);
+      if (incoming.confirmed) {
+        this.sendMessage({
+          type: CommunicationDataType.GAME_ACTION_HOSTER,
+          data: {
+            to: message.data.from,
+            payload: this.createGameMessageAcknowledgement(incoming.messageId),
+          },
+        });
+        normalizedMessage = {
+          ...message,
+          data: {
+            ...message.data,
+            payload: incoming.payload,
+          },
+        };
+      }
+    }
+
+    super.messageHandler(normalizedMessage);
+
+    if (normalizedMessage.type === CommunicationDataType.GAME_ACTION_RESPONSE_HOSTER) {
+      this.gameMessageListeners.forEach((callbackfn) =>
+        callbackfn.listener(normalizedMessage),
+      );
       return;
     }
   }

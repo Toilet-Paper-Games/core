@@ -1,6 +1,10 @@
 import { makeAutoObservable, reaction } from 'mobx';
 
-import { GameDataDefinition } from '@/common/CommunicationDataTransfers';
+import {
+  GameDataDefinition,
+  GameMessageDeliveryOptions,
+  GameMessageDeliveryReceipt,
+} from '@/common/CommunicationDataTransfers';
 
 import { PlayerModel } from '../common/models/PlayerModel';
 import { HosterCommunicator } from './HosterCommunicator';
@@ -82,9 +86,22 @@ export class SmartPlayerModel<TGameData extends GameDataDefinition> {
    * Sends a typed game payload only to this player.
    *
    * @param data Payload from the game's `HosterToController` contract.
+   * @param options Optional delivery-confirmation settings.
    */
-  sendMessage(data: TGameData['HosterToController']) {
-    return this.hosterCommunicator.sendGameMessage(data, this.connectionId);
+  sendMessage(data: TGameData['HosterToController']): void;
+  sendMessage(
+    data: TGameData['HosterToController'],
+    options: GameMessageDeliveryOptions,
+  ): Promise<GameMessageDeliveryReceipt>;
+  sendMessage(
+    data: TGameData['HosterToController'],
+    options?: GameMessageDeliveryOptions,
+  ): void | Promise<GameMessageDeliveryReceipt> {
+    if (options) {
+      return this.hosterCommunicator.sendGameMessage(data, this.connectionId, options);
+    }
+
+    this.hosterCommunicator.sendGameMessage(data, this.connectionId);
   }
 
   /**

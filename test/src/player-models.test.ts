@@ -86,9 +86,15 @@ describe('SmartPlayerModel', () => {
 
     smartPlayer.sendMessage({ notice: 'Next round' });
 
-    expect(sendGameMessage).toHaveBeenCalledWith(
-      { notice: 'Next round' },
+    expect(sendGameMessage).toHaveBeenCalledWith({ notice: 'Next round' }, 'player-1');
+
+    const options = { timeoutMs: 1_000 };
+    smartPlayer.sendMessage({ notice: 'Confirmed round' }, options);
+
+    expect(sendGameMessage).toHaveBeenLastCalledWith(
+      { notice: 'Confirmed round' },
       'player-1',
+      options,
     );
   });
 
