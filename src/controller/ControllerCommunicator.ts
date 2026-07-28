@@ -11,6 +11,9 @@ import {
   GameActionTransfer_CONTROLLER,
   GameDataDefinition,
   GameDataTransfer,
+  GameMessageDeliveryOptions,
+  GameMessageDeliveryReceipt,
+  isCommunicationDataTransfer,
 } from '../common/CommunicationDataTransfers';
 import { ControllerDataPersistence } from './ControllerDataPersistence';
 
@@ -64,10 +67,7 @@ export class ControllerCommunicator<
       return null;
     }
 
-    return (
-      this.pingData.hosterTimePingAdjusted +
-      (Date.now() - this.pingData.lastPoll)
-    );
+    return this.pingData.hosterTimePingAdjusted + (Date.now() - this.pingData.lastPoll);
   }
 
   addHosterReadyListener(listener: (ready: boolean) => void) {
@@ -153,6 +153,7 @@ export class ControllerCommunicator<
    */
   destructor() {
     window.removeEventListener('message', this.messageListener);
+    this.rejectPendingGameMessageDeliveries();
   }
 
   private setupPingPong() {
@@ -215,7 +216,30 @@ export class ControllerCommunicator<
    * Sends a game message to the hoster.
    * @param data The game data to be sent.
    */
-  sendGameMessage(data: TGameData['ControllerToHoster']) {
+  sendGameMessage(data: TGameData['ControllerToHoster']): void;
+  sendGameMessage(
+    data: TGameData['ControllerToHoster'],
+    options: GameMessageDeliveryOptions,
+  ): Promise<GameMessageDeliveryReceipt>;
+  sendGameMessage(
+    data: TGameData['ControllerToHoster'],
+    options?: GameMessageDeliveryOptions,
+  ): void | Promise<GameMessageDeliveryReceipt> {
+    if (options) {
+      const { envelope, delivery } = this.createConfirmedGameMessage(
+        data,
+        'hoster',
+        options,
+      );
+      this.sendMessage({
+        type: CommunicationDataType.GAME_ACTION_CONTROLLER,
+        data: {
+          payload: envelope,
+        },
+      });
+      return delivery;
+    }
+
     this.sendMessage({
       type: CommunicationDataType.GAME_ACTION_CONTROLLER,
       data: {
@@ -277,10 +301,45 @@ export class ControllerCommunicator<
 
   /** This should not be used unless you know what you are doing */
   messageHandler(message: unknown) {
-    super.messageHandler(message);
+    if (!isCommunicationDataTransfer<TGameData>(message)) {
+      throw new Error('Invalid data transfer');
+    }
 
+    if (
+      message.type === CommunicationDataType.GAME_ACTION_RESPONSE_CONTROLLER &&
+      this.handleGameMessageAcknowledgement(message.data.payload)
+    ) {
+      return;
+    }
+
+    let normalizedMessage = message;
     if (message.type === CommunicationDataType.GAME_ACTION_RESPONSE_CONTROLLER) {
-      this.gameMessageListeners.forEach((callbackfn) => callbackfn.listener(message));
+      const incoming = this.unwrapConfirmedGameMessage(message.data.payload);
+      if (incoming.confirmed) {
+        this.sendMessage({
+          type: CommunicationDataType.GAME_ACTION_CONTROLLER,
+          data: {
+            payload: this.createGameMessageAcknowledgement(incoming.messageId),
+          },
+        });
+        normalizedMessage = {
+          ...message,
+          data: {
+            ...message.data,
+            payload: incoming.payload,
+          },
+        };
+      }
+    }
+
+    super.messageHandler(normalizedMessage);
+
+    if (
+      normalizedMessage.type === CommunicationDataType.GAME_ACTION_RESPONSE_CONTROLLER
+    ) {
+      this.gameMessageListeners.forEach((callbackfn) =>
+        callbackfn.listener(normalizedMessage),
+      );
       return;
     }
   }

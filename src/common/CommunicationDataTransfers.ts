@@ -11,6 +11,92 @@ export interface GameDataDefinition<C2H = unknown, H2C = unknown> {
   HosterToController: H2C;
 }
 
+export const DEFAULT_GAME_MESSAGE_DELIVERY_TIMEOUT_MS = 5_000;
+
+export interface GameMessageDeliveryOptions {
+  /**
+   * Maximum time to wait for the receiving game iframe to acknowledge the
+   * message.
+   */
+  timeoutMs?: number;
+}
+
+export interface GameMessageDeliveryReceipt {
+  messageId: string;
+  recipientId: string;
+  confirmedAt: number;
+}
+
+export type GameMessageDeliveryErrorCode =
+  | 'timeout'
+  | 'recipient-unavailable'
+  | 'communicator-destroyed';
+
+export class GameMessageDeliveryError extends Error {
+  readonly name = 'GameMessageDeliveryError';
+
+  constructor(
+    readonly code: GameMessageDeliveryErrorCode,
+    readonly messageId: string,
+    readonly recipientId: string,
+    readonly timeoutMs?: number,
+  ) {
+    super(
+      code === 'timeout'
+        ? `Game message ${messageId} was not acknowledged by ${recipientId} within ${timeoutMs}ms.`
+        : code === 'recipient-unavailable'
+          ? `Game message ${messageId} cannot be delivered because ${recipientId} is unavailable.`
+          : `Game message ${messageId} was cancelled because the communicator was destroyed.`,
+    );
+  }
+}
+
+interface GameMessageDeliveryMetadata {
+  version: 1;
+  kind: 'message' | 'acknowledgement';
+  messageId: string;
+}
+
+export interface ConfirmedGameMessageEnvelope<TPayload> {
+  __tpgCoreDelivery: GameMessageDeliveryMetadata & { kind: 'message' };
+  payload: TPayload;
+}
+
+export interface GameMessageAcknowledgementEnvelope {
+  __tpgCoreDelivery: GameMessageDeliveryMetadata & {
+    kind: 'acknowledgement';
+  };
+}
+
+export type GameMessageDeliveryEnvelope<TPayload> =
+  | ConfirmedGameMessageEnvelope<TPayload>
+  | GameMessageAcknowledgementEnvelope;
+
+export function isGameMessageDeliveryEnvelope(
+  value: unknown,
+): value is GameMessageDeliveryEnvelope<unknown> {
+  if (typeof value !== 'object' || value === null || !('__tpgCoreDelivery' in value)) {
+    return false;
+  }
+
+  const metadata = value.__tpgCoreDelivery;
+  if (
+    typeof metadata !== 'object' ||
+    metadata === null ||
+    !('version' in metadata) ||
+    metadata.version !== 1 ||
+    !('kind' in metadata) ||
+    (metadata.kind !== 'message' && metadata.kind !== 'acknowledgement') ||
+    !('messageId' in metadata) ||
+    typeof metadata.messageId !== 'string' ||
+    metadata.messageId.length === 0
+  ) {
+    return false;
+  }
+
+  return metadata.kind === 'acknowledgement' || 'payload' in value;
+}
+
 // G2P = Game to Platform
 // P2G = Platform to Game
 
