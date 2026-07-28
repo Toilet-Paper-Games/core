@@ -7,9 +7,27 @@ import {
 } from '@/index';
 
 describe('ControllerCommunicator hoster time', () => {
+  let installedPromiseWithResolvers = false;
+
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(10_000);
+    if (!Promise.withResolvers) {
+      Object.defineProperty(Promise, 'withResolvers', {
+        configurable: true,
+        value: <T>() => {
+          let resolve!: (value: T | PromiseLike<T>) => void;
+          let reject!: (reason?: unknown) => void;
+          const promise = new Promise<T>((promiseResolve, promiseReject) => {
+            resolve = promiseResolve;
+            reject = promiseReject;
+          });
+
+          return { promise, resolve, reject };
+        },
+      });
+      installedPromiseWithResolvers = true;
+    }
     vi.stubGlobal('window', {
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
@@ -20,6 +38,10 @@ describe('ControllerCommunicator hoster time', () => {
   });
 
   afterEach(() => {
+    if (installedPromiseWithResolvers) {
+      Reflect.deleteProperty(Promise, 'withResolvers');
+      installedPromiseWithResolvers = false;
+    }
     vi.useRealTimers();
     vi.unstubAllGlobals();
   });
